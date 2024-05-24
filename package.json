@@ -1,0 +1,9 @@
+{
+    "scripts": {
+      "test": "pytest",
+      "lint": "flake8 .",
+      "prepush": "npm run lint && python3 manage.py tests",
+      "precommit": "python3 manage.py check"
+    }
+  }
+  

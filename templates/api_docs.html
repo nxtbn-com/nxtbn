@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>API Documentation</title>
+</head>
+<body>
+    <h1>API Documentation</h1>
+    <p>Choose which documentation you would like to view:</p>
+    <ul>
+        <li><a href="{% url 'docs_dashboard_swagger' %}">Dashboard Swagger Documentation</a></li>
+        <li><a href="{% url 'docs_dashboard_redoc' %}">Dashboard ReDoc Documentation</a></li>
+        <li><a href="{% url 'docs_storefront_swagger' %}">Storefront Swagger Documentation</a></li>
+        <li><a href="{% url 'docs_storefront_redoc' %}">Storefront ReDoc Documentation</a></li>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  backend:
+    build:
+      context: .
+    volumes:
+      - static_data:/backend/staticfiles
+      - "./dist/media:/backend/media" # map to local machine
+    env_file: # if .env in root, we have to show .env here must
+      - ./.env
+    # depends_on:
+    #   - db
+
+  proxy:
+    build:
+      context: ./proxy
+    volumes:
+      - static_data:/backend/staticfiles
+      - "./dist/media:/backend/media" # map to local machine
+    ports:
+      - "80:80"
+    env_file: # if .env in root, we have to show .env here must
+      - ./.env
+    depends_on:
+      - backend
+      # - db
+  
+volumes:
+  static_data:
+  # database:
