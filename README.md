@@ -94,20 +94,6 @@ Ready to start? Here's what you need to do:
 4. **Explore Documentation**: Learn about the different features and customization options available.
 
 
-## 👥 Join the Community
-We welcome contributions and feedback! Here's how you can get involved:
-- **Contribute to the Code**: Check out our [Contribution Guidelines](CONTRIBUTING.md).
-- **Report Issues**: Found a bug or have a suggestion? [Open an Issue](https://github.com/nxtbn-com/nxtbn/issues).
-- **Join the Discussion**: Engage with other developers and users on our [Community Forum](https://github.com/orgs/nxtbn-com/discussions).
-
-## 💬 Community Channels
-- **Slack**: Join our Slack workspace for real-time discussions and announcements. [Click here to join](https://join.slack.com/t/newworkspace-ppn4922/shared_invite/zt-2itd6g4nk-uP1J6mcdRFga0AEdwxih~A).
-- **Facebook Group**: Connect with us and other community members in our [Facebook Group](https://www.facebook.com/groups/).
-- **LinkedIn Group**: Network with us on LinkedIn in our [LinkedIn Group](https://www.linkedin.com/groups/13023703/).
-- **Facebook Page**: Follow our updates on our [Facebook Page](https://www.facebook.com/nxtbncms).
-- **LinkedIn Page**: Stay connected on our [LinkedIn Page](https://www.linkedin.com/company/nxtbn/).
-
-
 ## FAQ for Nxtbn
 
 ### 1. Should I use nxtbn as a library/tool or as a boilerplate?
