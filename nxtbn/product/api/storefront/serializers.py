@@ -8,6 +8,7 @@ from nxtbn.product.api.dashboard.serializers import RecursiveCategorySerializer
 from nxtbn.filemanager.api.dashboard.serializers import ImageSerializer
 from nxtbn.product.models import Product, Collection, Category, ProductVariant
 
+
 class CategorySerializer(RecursiveCategorySerializer):
     pass
 
@@ -27,8 +28,9 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         if not settings.IS_MULTI_CURRENCY: # If site is in single currency, no currenyc required
             return obj.price
         else:
+            from nxtbn.core.currency import currency_Backend
             currency_code = self.context.get('request').currency
-            rate = CurrencyExchange.objects.get(base_currency=settings.BASE_CURRENCY, target_currency=currency_code).exchange_rate
+            rate = currency_Backend().convert_to_customer_currency(currency_code, obj.price)
         return rate
 
 class ProductSerializer(serializers.ModelSerializer):

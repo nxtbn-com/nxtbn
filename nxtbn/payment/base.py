@@ -248,7 +248,7 @@ class PaymentPlugin(ABC):
         """
             Adjust the decimal amount by multiplying it by 100 and return as an integer.
             Args:
-                amount (Decimal): The amount to be adjusted.
+                amount (int): The amount to be adjusted.
             Returns:
                 int: The adjusted amount as an integer.
         """
