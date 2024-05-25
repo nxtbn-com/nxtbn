@@ -24,3 +24,24 @@ class CurrencyBackend(ABC):
                 target_currency=fetch_data['target_currency'],
                 defaults={'exchange_rate': fetch_data['exchange_rate']}
             )
+
+    def convert_to_customer_currency(self, target_currency: str, amount: float) -> float:
+        """
+        Convert the given amount from the base currency to the target currency.
+        
+        Args:
+        - target_currency: str
+        - amount: float
+        
+        Returns:
+        - float: Amount in the target currency.
+        """
+        try:
+            exchange_rate = CurrencyExchange.objects.get(
+                base_currency=self.base_currency,
+                target_currency=target_currency
+            ).exchange_rate
+            return amount * exchange_rate
+        except CurrencyExchange.DoesNotExist:
+            raise ValueError(f"Exchange rate for {target_currency} not found.")
+        
