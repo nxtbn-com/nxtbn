@@ -4,8 +4,13 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 from django_extensions.db.fields import AutoSlugField
-from nxtbn.core import CurrencyTypes
+from nxtbn.core import CurrencyTypes, MoneyFieldTypes
+from nxtbn.core.mixin import CurrencyValidatorMixin
 from nxtbn.users.admin import User
+
+
+from money.money import Currency, Money
+from babel.numbers import get_currency_precision, format_currency
 
 #============================
 # Abstract Base Model Start
@@ -138,12 +143,30 @@ class SiteSettings(models.Model):
 
 
 
-class CurrencyExchange(models.Model):
-    base_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices)
+class CurrencyExchange(CurrencyValidatorMixin, models.Model):
+    money_config = {
+        "exchange_rate": {
+            "currency_field": "target_currency",
+            "type": MoneyFieldTypes.SUBUNIT,
+        },
+    }
+     
+    base_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices) # base currency always should come from from settings.BASE_CURRENCY
+
     target_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices)
-    exchange_rate = models.DecimalField(max_digits=10, decimal_places=4)
+    exchange_rate = models.IntegerField(default=0)
+
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+
+    def total_in_units(self): #subunit -to-unit 
+        precision = get_currency_precision(self.target_currency)
+        unit = self.exchange_rate / (10 ** precision)
+        return unit
+    
+    def humanize_rate(self):
+        return format_currency(self.total_in_units(), self.target_currency, locale='en_US')
 
     def __str__(self):
         return f"{self.base_currency} to {self.target_currency}"
