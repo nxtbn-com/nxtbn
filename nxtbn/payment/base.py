@@ -212,7 +212,10 @@ class PaymentPlugin(ABC):
         Returns:
             str: The currency code extracted from the request.
         """
-        return self.base_currency
+        if self.context['request'].data.get('currency_code'):
+            return self.context['request'].data.get('currency_code')
+        else:
+            return self.context['request'].currency
     
     def total_amount_in_subunit(self, **kwargs) -> int:
         """

@@ -27,6 +27,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class GuestOrderSerializer(serializers.ModelSerializer):
+    currency_code = serializers.CharField(write_only=True, required=False)
     promo_code= serializers.CharField(write_only=True, required=False)
     shipping_address = AddressSerializer(write_only=True)
     billing_address = AddressSerializer(write_only=True, required=False)
@@ -44,6 +45,7 @@ class GuestOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
+            'currency_code',
             'promo_code',
             'total_price',
             'shipping_address',
@@ -102,6 +104,7 @@ class GuestOrderSerializer(serializers.ModelSerializer):
     
 
 class AuthenticatedUserOrderSerializer(serializers.ModelSerializer): # TO DO: Test with frontend passing both saved address id and promo code etc?
+    currency_code = serializers.CharField(write_only=True, required=False)
     promo_code= serializers.CharField(write_only=True, required=False)
     cart_data = serializers.ListField(child=serializers.DictField(), write_only=True, required=False)
     meta_data =  serializers.ListField(child=serializers.DictField(), write_only=True, required=False)
@@ -121,6 +124,7 @@ class AuthenticatedUserOrderSerializer(serializers.ModelSerializer): # TO DO: Te
             'billing_address',
             'cart_data',
             'meta_data',
+            'currency_code',
         ]
     
     def create(self, validated_data):
