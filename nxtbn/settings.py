@@ -123,7 +123,8 @@ INSTALLED_APPS += LOCAL_APPS + HELPING_HAND_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # TODO: Do we need this?
+    'nxtbn.core.currency_middleware.CurrencyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
