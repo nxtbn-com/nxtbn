@@ -23,6 +23,7 @@ faker = "*"
 pyjwt = "*"
 stripe = "*"
 py-money = "*"
+django-celery-beat = "*"
 
 [dev-packages]
 coverage = "*"

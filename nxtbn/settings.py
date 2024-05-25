@@ -117,6 +117,7 @@ HELPING_HAND_APPS = [
     'django_extensions',
     "corsheaders",
     "django_filters",
+    'django_celery_beat',
 ]
 
 INSTALLED_APPS += LOCAL_APPS + HELPING_HAND_APPS
