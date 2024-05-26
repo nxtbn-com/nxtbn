@@ -346,7 +346,7 @@ SWAGGER_SETTINGS = { # "Token <YOUR TOKEN>""
 # NXTBN Specific Configuration
 # ============================
 
-PLUGIN_DIR = 'nxtbn.plugins'
+PLUGIN_DIR = 'nxtbn.plugins.sources'
 PAYMENT_PLUGIN_DIR = 'nxtbn.payment.plugins'
 
 NXTBN_JWT_SETTINGS = {
@@ -357,7 +357,8 @@ NXTBN_JWT_SETTINGS = {
 }
 
 
-# Money Configuration
+# Currency Configuration
 BASE_CURRENCY = get_env_var("BASE_CURRENCY", default="USD")
+ALLOWED_CURRENCIES = get_env_var("ALLOWED_CURRENCIES", default=[], var_type=list)
 CURRENCY_BACKEND = get_env_var("CURRENCY_BACKEND", default="")
 IS_MULTI_CURRENCY = True if CURRENCY_BACKEND else False # TODO: Do we need this?

@@ -17,7 +17,7 @@ class CurrencyBackend(ABC):
         """
         pass
 
-    def refresh_rate(self, data):
+    def refresh_rate(self):
         for fetch_data in self.fetch_data():
             CurrencyExchange.objects.update_or_create(
                 base_currency=self.base_currency,
