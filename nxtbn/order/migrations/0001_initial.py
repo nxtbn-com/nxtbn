@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(nxtbn.core.mixin.CurrencyValidatorMixin, models.Model),
+            bases=(nxtbn.core.mixin.MonetaryMixin, models.Model),
         ),
         migrations.CreateModel(
             name='OrderLineItem',

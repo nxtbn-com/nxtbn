@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 
 
 from nxtbn.core import CurrencyTypes, MoneyFieldTypes
-from nxtbn.core.mixin import CurrencyValidatorMixin
+from nxtbn.core.mixin import MonetaryMixin
 from nxtbn.core.models import AbstractSEOModel, PublishableModel, AbstractBaseUUIDModel, AbstractBaseModel, NameDescriptionAbstract
 from nxtbn.filemanager.models import Document, Image
 from nxtbn.product import ProductType, StockStatus, WeightUnits
@@ -124,8 +124,8 @@ class Product(PublishableModel, AbstractSEOModel):
         return reverse("product_detail", args=[self.slug])
 
 
-class ProductVariant(CurrencyValidatorMixin, models.Model):
-    money_config = {
+class ProductVariant(MonetaryMixin, models.Model):
+    money_validator_map = {
         "price": {
             "currency_field": "currency",
             "type": MoneyFieldTypes.UNIT,

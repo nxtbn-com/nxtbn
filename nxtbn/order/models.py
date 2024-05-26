@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 from nxtbn.core import CurrencyTypes, MoneyFieldTypes
-from nxtbn.core.mixin import CurrencyValidatorMixin
+from nxtbn.core.mixin import MonetaryMixin
 from nxtbn.core.models import AbstractAddressModels, AbstractBaseModel, AbstractBaseUUIDModel
 from nxtbn.discount.models import PromoCode
 from nxtbn.gift_card.models import GiftCard
@@ -33,7 +33,7 @@ class Address(AbstractAddressModels):
     def __str__(self):
         return f"{self.first_name} {self.last_name}, {self.street_address}, {self.city}, {self.country}"
 
-class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
+class Order(MonetaryMixin, AbstractBaseUUIDModel):
     """
     Represents an order placed by a customer.
 
@@ -60,7 +60,7 @@ class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
     """
 
     # https://docs.nxtbn.com/moneyvalidation
-    money_config = {
+    money_validator_map = {
         "total_price": {
             "currency_field": "currency",
             "type": MoneyFieldTypes.SUBUNIT,

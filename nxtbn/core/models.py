@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 from django_extensions.db.fields import AutoSlugField
 from nxtbn.core import CurrencyTypes, MoneyFieldTypes
-from nxtbn.core.mixin import CurrencyValidatorMixin
+from nxtbn.core.mixin import MonetaryMixin
 from nxtbn.users.admin import User
 
 
@@ -144,8 +144,8 @@ class SiteSettings(models.Model):
 
 
 
-class CurrencyExchange(CurrencyValidatorMixin, models.Model):
-    money_config = {
+class CurrencyExchange(MonetaryMixin, models.Model):
+    money_validator_map = {
         "exchange_rate": {
             "currency_field": "target_currency",
             "type": MoneyFieldTypes.UNIT,
