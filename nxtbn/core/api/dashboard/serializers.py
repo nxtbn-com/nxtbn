@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from django.db import transaction
 
+from nxtbn.core import PluginType
+
 class ZipFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
     
@@ -21,5 +23,6 @@ class ZipFileUploadSerializer(serializers.Serializer):
         return value
 
 
-class URLSerializer(serializers.Serializer):
-    url = serializers.URLField()
+class PluginInstallSerializer(serializers.Serializer):
+    git_url = serializers.URLField()
+    plugin_type = serializers.ChoiceField(choices=PluginType.choices)
