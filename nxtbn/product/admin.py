@@ -49,3 +49,6 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ('last_modified_by',) 
 
 admin.site.register(Product, ProductAdmin)
+
+
+admin.site.register(ProductVariant)
