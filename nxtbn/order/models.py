@@ -64,10 +64,11 @@ class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
         "total_price": {
             "currency_field": "currency",
             "type": MoneyFieldTypes.SUBUNIT,
+            "require_base_currency": True,
         },
         "total_price_in_customer_currency": {
             "currency_field": "customer_currency",
-            "type": MoneyFieldTypes.SUBUNIT,
+            "type": MoneyFieldTypes.UNIT,
         },
     }
 
@@ -100,10 +101,12 @@ class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
         help_text="ISO currency code of the original amount paid by the customer. "
                 "For example, 'AUD' for Australian Dollars."
     )
-    total_price_in_customer_currency = models.IntegerField(
-        null=True, blank=True, validators=[MinValueValidator(1)],
+    total_price_in_customer_currency = models.DecimalField(
+        null=True,
+        blank=True,
+        decimal_places=4,
+        max_digits=12,
         help_text="Original amount paid by the customer in the customer's currency, stored in cents. "
-                "For example, if the customer paid AUD 1.00, it would be stored as 100 cents."
     )
 
 
