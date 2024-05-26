@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 from decimal import Decimal
-from nxtbn.core import MoneyFieldTypes
+from nxtbn.core import CurrencyTypes, MoneyFieldTypes
 from nxtbn.core.mixin import CurrencyValidatorMixin
 from nxtbn.core.models import AbstractAddressModels, AbstractBaseModel, AbstractBaseUUIDModel
 from nxtbn.discount.models import PromoCode
@@ -65,6 +65,10 @@ class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
             "currency_field": "currency",
             "type": MoneyFieldTypes.SUBUNIT,
         },
+        "total_price_in_customer_currency": {
+            "currency_field": "customer_currency",
+            "type": MoneyFieldTypes.SUBUNIT,
+        },
     }
 
 
@@ -78,7 +82,8 @@ class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
 
     currency = models.CharField(
         max_length=3,
-        default='USD',
+        default=CurrencyTypes.USD,
+        choices=CurrencyTypes.choices,
         help_text="ISO currency code for the order. This is the base currency in which the total amount will be stored after converting from the customer's currency to the base currency. "
                 "For example, 'USD' for US Dollars. The base currency is defined in the settings."
     )
@@ -90,6 +95,8 @@ class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
     )
     customer_currency = models.CharField(
         max_length=3,
+        default=CurrencyTypes.USD,
+        choices=CurrencyTypes.choices,
         help_text="ISO currency code of the original amount paid by the customer. "
                 "For example, 'AUD' for Australian Dollars."
     )
