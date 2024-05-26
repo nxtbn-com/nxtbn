@@ -346,8 +346,8 @@ SWAGGER_SETTINGS = { # "Token <YOUR TOKEN>""
 # NXTBN Specific Configuration
 # ============================
 
-PLUGIN_DIR = 'nxtbn.pluggins'
-
+PLUGIN_DIR = 'nxtbn.plugins'
+PAYMENT_PLUGIN_DIR = 'nxtbn.payment.plugins'
 
 NXTBN_JWT_SETTINGS = {
     'SECRET_KEY': get_env_var("JWT_SECRET_KEY", SECRET_KEY), # default django's secret key

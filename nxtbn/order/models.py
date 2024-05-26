@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 from nxtbn.core import CurrencyTypes, MoneyFieldTypes
-from nxtbn.core.mixin import CurrencyValidatorMixin
+from nxtbn.core.mixin import MonetaryMixin
 from nxtbn.core.models import AbstractAddressModels, AbstractBaseModel, AbstractBaseUUIDModel
 from nxtbn.discount.models import PromoCode
 from nxtbn.gift_card.models import GiftCard
@@ -33,7 +33,7 @@ class Address(AbstractAddressModels):
     def __str__(self):
         return f"{self.first_name} {self.last_name}, {self.street_address}, {self.city}, {self.country}"
 
-class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
+class Order(MonetaryMixin, AbstractBaseUUIDModel):
     """
     Represents an order placed by a customer.
 
@@ -60,14 +60,15 @@ class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
     """
 
     # https://docs.nxtbn.com/moneyvalidation
-    money_config = {
+    money_validator_map = {
         "total_price": {
             "currency_field": "currency",
             "type": MoneyFieldTypes.SUBUNIT,
+            "require_base_currency": True,
         },
         "total_price_in_customer_currency": {
             "currency_field": "customer_currency",
-            "type": MoneyFieldTypes.SUBUNIT,
+            "type": MoneyFieldTypes.UNIT,
         },
     }
 
@@ -100,10 +101,12 @@ class Order(CurrencyValidatorMixin, AbstractBaseUUIDModel):
         help_text="ISO currency code of the original amount paid by the customer. "
                 "For example, 'AUD' for Australian Dollars."
     )
-    total_price_in_customer_currency = models.IntegerField(
-        null=True, blank=True, validators=[MinValueValidator(1)],
+    total_price_in_customer_currency = models.DecimalField(
+        null=True,
+        blank=True,
+        decimal_places=4,
+        max_digits=12,
         help_text="Original amount paid by the customer in the customer's currency, stored in cents. "
-                "For example, if the customer paid AUD 1.00, it would be stored as 100 cents."
     )
 
 

@@ -1,9 +1,11 @@
+import importlib
 import os
 import zipfile
 import shutil
 import subprocess
 
 from django.conf import settings
+import tempfile
 
 import requests
 from rest_framework import generics, status
@@ -24,14 +26,61 @@ from rest_framework import serializers
 
 
 
-from nxtbn.core.api.dashboard.serializers import URLSerializer, ZipFileUploadSerializer
+from nxtbn.core import PluginType
+from nxtbn.core.api.dashboard.serializers import PluginInstallSerializer, ZipFileUploadSerializer
 
 PLUGIN_DIR = getattr(settings, 'PLUGIN_DIR')
+PAYMENT_PLUGIN_DIR =  getattr(settings, 'PAYMENT_PLUGIN_DIR')
 
 os.makedirs(PLUGIN_DIR, exist_ok=True)
 
+def get_module_path(module_name):
+    spec = importlib.util.find_spec(module_name)
+    if spec and spec.origin:
+        return os.path.dirname(spec.origin)
+    raise ImportError(f"Module {module_name} not found")
 
-plugin_storage = FileSystemStorage(location=PLUGIN_DIR)
+class PlugginsInstallViaGitView(generics.CreateAPIView):
+    "upload plugin via repository url, example url: https://[github/bitbucket/gitlab].com/nxtbn-com/stripe-payment-link"
+    serializer_class = PluginInstallSerializer
+
+    def perform_create(self, serializer):
+        git_url = serializer.validated_data['git_url']
+        plugin_type = serializer.validated_data['plugin_type']
+        
+        # Determine the target directory based on the plugin type
+        if plugin_type == PluginType.PAYMENT_PROCESSOR:
+            target_dir_base =  get_module_path(PAYMENT_PLUGIN_DIR)
+        else:
+            target_dir_base = get_module_path(PLUGIN_DIR)
+        
+        # Clone the repository
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            clone_dir = os.path.join(tmpdirname, 'repo')
+            subprocess.run(['git', 'clone', git_url, clone_dir], check=True)
+
+            # Remove the .git directory
+            git_dir = os.path.join(clone_dir, '.git')
+            if os.path.exists(git_dir):
+                shutil.rmtree(git_dir)
+            
+            # Move the cloned directory to the target directory
+            plugin_name = os.path.basename(git_url).rsplit('.', 1)[0]
+            target_dir = os.path.join(target_dir_base, plugin_name)
+            if os.path.exists(target_dir):
+                shutil.rmtree(target_dir)
+            shutil.move(clone_dir, target_dir)
+
+            # Install requirements if requirements.txt exists
+            requirements_path = os.path.join(target_dir, 'requirements.txt')
+            if os.path.exists(requirements_path):
+                subprocess.run(['pip', 'install', '-r', requirements_path], check=True)
+
+        return Response(
+            {'message': 'Plugin cloned, .git removed, and requirements installed successfully'},
+            status=status.HTTP_201_CREATED,
+        )
+
 
 class PlugginsUploadView(APIView):
     def post(self, request, *args, **kwargs):
@@ -55,65 +104,3 @@ class PlugginsUploadView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-class UploadPaymentPlugin(generics.CreateAPIView):
-    parser_class = (MultiPartParser,)
-    queryset = None
-    serializer_class = ZipFileUploadSerializer
-
-    def perform_create(self, serializer):
-        uploaded_file = serializer.validated_data['file']
-        plugin_path = os.path.join(settings.BASE_DIR, 'nxtbn', 'payment', 'plugins')
-
-        if uploaded_file.name.endswith('.zip'):
-            try:
-                with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
-                    zip_ref.extractall(plugin_path)
-                
-                os.remove(uploaded_file.name)
-                
-                requirement_file_path = os.path.join(plugin_path, 'requirement.txt')
-                if os.path.exists(requirement_file_path):
-                    subprocess.call(['pip', 'install', '-r', requirement_file_path])
-                
-                serializer.save()
-            except Exception as e:
-                raise serializers.ValidationError({'error': str(e)})
-        else:
-            raise serializers.ValidationError({'error': 'Uploaded file is not a ZIP file.'})
-
-        return Response({'message': 'Files uploaded and dependencies installed successfully.'}, status=status.HTTP_200_OK)
-    
-
-class UploadInstallPaymentPlugins(generics.CreateAPIView):
-    parser_classes = (JSONParser,)
-    queryset = None
-    serializer_class = URLSerializer
-
-    def perform_create(self, serializer):
-        zip_file_url = serializer.validated_data['url']
-        plugin_path = os.path.join(settings.BASE_DIR, 'nxtbn', 'payment', 'plugins')
-
-        try:
-            response = requests.get(zip_file_url)
-            if response.status_code == 200:
-                with open(os.path.join(plugin_path, 'downloaded_plugins.zip'), 'wb') as f:
-                    f.write(response.content)
-                
-                with zipfile.ZipFile(os.path.join(plugin_path, 'ddownloaded_plugins.zip'), 'r') as zip_ref:
-                    zip_ref.extractall(plugin_path)
-                
-                os.remove(os.path.join(plugin_path, 'downloaded_plugins.zip'))
-                
-                requirement_file_path = os.path.join(plugin_path, 'requirement.txt')
-                if os.path.exists(requirement_file_path):
-                    subprocess.call(['pip', 'install', '-r', requirement_file_path])
-                
-                serializer.save()
-            else:
-                raise Exception(f"Failed to download ZIP file from URL: {zip_file_url}")
-
-        except Exception as e:
-            raise serializers.ValidationError({'error': str(e)})
-
-        return Response({'message': 'Files downloaded and dependencies installed successfully.'}, status=status.HTTP_200_OK)

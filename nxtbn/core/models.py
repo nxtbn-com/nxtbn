@@ -1,11 +1,12 @@
 import uuid
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 from django_extensions.db.fields import AutoSlugField
 from nxtbn.core import CurrencyTypes, MoneyFieldTypes
-from nxtbn.core.mixin import CurrencyValidatorMixin
+from nxtbn.core.mixin import MonetaryMixin
 from nxtbn.users.admin import User
 
 
@@ -143,30 +144,37 @@ class SiteSettings(models.Model):
 
 
 
-class CurrencyExchange(CurrencyValidatorMixin, models.Model):
-    money_config = {
+class CurrencyExchange(MonetaryMixin, models.Model):
+    money_validator_map = {
         "exchange_rate": {
             "currency_field": "target_currency",
-            "type": MoneyFieldTypes.SUBUNIT,
+            "type": MoneyFieldTypes.UNIT,
         },
     }
      
-    base_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices) # base currency always should come from from settings.BASE_CURRENCY
+    base_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices) # base currency always should come from settings.BASE_CURRENCY
 
     target_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices)
-    exchange_rate = models.IntegerField(default=0)
+    exchange_rate = models.DecimalField(
+        decimal_places=4,
+        max_digits=12,
+    )
+
 
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        self.validate_amount()
+        super(CurrencyExchange, self).save(*args, **kwargs)
 
-    def total_in_units(self): #subunit -to-unit 
-        precision = get_currency_precision(self.target_currency)
-        unit = self.exchange_rate / (10 ** precision)
-        return unit
+    def clean(self) -> None:
+        if self.base_currency != settings.BASE_CURRENCY:
+            raise ValidationError("Base currency should be the same as the base currency in the settings.")
+        return super().clean()
     
     def humanize_rate(self):
-        return format_currency(self.total_in_units(), self.target_currency, locale='en_US')
+        return format_currency(self.exchange_rate, self.target_currency, locale='en_US')
 
     def __str__(self):
         return f"{self.base_currency} to {self.target_currency}"
