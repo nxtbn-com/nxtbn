@@ -129,6 +129,7 @@ class ProductVariant(CurrencyValidatorMixin, models.Model):
         "price": {
             "currency_field": "currency",
             "type": MoneyFieldTypes.UNIT,
+            "require_base_currency": True,
         },
     }
 

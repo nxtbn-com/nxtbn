@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from money.money import Currency, Money
 from decimal import InvalidOperation
@@ -13,6 +14,7 @@ class MoneyFieldConfiguration(TypedDict):
     """Type definition for configuring money fields with their related currency fields."""
     amount_type: MoneyFieldTypes
     currency_field_name: str
+    require_base_currency: bool
 
 class CurrencyValidatorMixin:
     """
@@ -46,3 +48,7 @@ class CurrencyValidatorMixin:
                     Money.from_sub_units(amount, currency)
             except (InvalidAmountError, InvalidOperation):
                 raise ValidationError({field_name: f"Invalid amount '{amount}' for currency '{currency_str}'"})
+            
+            if config.get("require_base_currency", False):
+                if currency_str != settings.BASE_CURRENCY:
+                    raise ValidationError({field_name: f"Currency field '{field_name}' expects value same as base currency '{settings.BASE_CURRENCY}', other currency values can't be added"})
