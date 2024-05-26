@@ -123,3 +123,4 @@ nginx.conf
 
 # Ignore all subdirectories under plugins
 nxtbn/payment/plugins/*/
+nxtbn/plugins/sources/*/

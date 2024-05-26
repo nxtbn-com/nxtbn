@@ -144,14 +144,7 @@ class SiteSettings(models.Model):
 
 
 
-class CurrencyExchange(MonetaryMixin, models.Model):
-    money_validator_map = {
-        "exchange_rate": {
-            "currency_field": "target_currency",
-            "type": MoneyFieldTypes.UNIT,
-        },
-    }
-     
+class CurrencyExchange(models.Model):
     base_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices) # base currency always should come from settings.BASE_CURRENCY
 
     target_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices)
@@ -164,9 +157,7 @@ class CurrencyExchange(MonetaryMixin, models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def save(self, *args, **kwargs):
-        self.validate_amount()
-        super(CurrencyExchange, self).save(*args, **kwargs)
+    
 
     def clean(self) -> None:
         if self.base_currency != settings.BASE_CURRENCY:
@@ -174,7 +165,8 @@ class CurrencyExchange(MonetaryMixin, models.Model):
         return super().clean()
     
     def humanize_rate(self):
-        return format_currency(self.exchange_rate, self.target_currency, locale='en_US')
+        return 'TODO: Implement this method'
+        # return format_currency(self.exchange_rate, self.target_currency, locale='en_US')
 
     def __str__(self):
         return f"{self.base_currency} to {self.target_currency}"
