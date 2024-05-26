@@ -26,7 +26,7 @@ from rest_framework import serializers
 
 
 
-from nxtbn.core import PluginType
+from nxtbn.plugins import PluginType
 from nxtbn.core.api.dashboard.serializers import PluginInstallSerializer, ZipFileUploadSerializer
 
 PLUGIN_DIR = getattr(settings, 'PLUGIN_DIR')
