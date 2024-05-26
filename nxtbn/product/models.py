@@ -7,7 +7,8 @@ from django.core.exceptions import ValidationError
 
 
 
-from nxtbn.core import MoneyFieldTypes
+from nxtbn.core import CurrencyTypes, MoneyFieldTypes
+from nxtbn.core.mixin import CurrencyValidatorMixin
 from nxtbn.core.models import AbstractSEOModel, PublishableModel, AbstractBaseUUIDModel, AbstractBaseModel, NameDescriptionAbstract
 from nxtbn.filemanager.models import Document, Image
 from nxtbn.product import ProductType, StockStatus, WeightUnits
@@ -123,13 +124,27 @@ class Product(PublishableModel, AbstractSEOModel):
         return reverse("product_detail", args=[self.slug])
 
 
-class ProductVariant(models.Model):     
+class ProductVariant(CurrencyValidatorMixin, models.Model):
+    money_config = {
+        "price": {
+            "currency_field": "currency",
+            "type": MoneyFieldTypes.UNIT,
+        },
+    }
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
     variant_image = models.ManyToManyField(Image, blank=True)
     name = models.CharField(max_length=255, blank=True, null=True)
 
     compare_at_price = models.DecimalField(max_digits=12, decimal_places=3, validators=[MinValueValidator(Decimal('0.01'))])
+
+    currency = models.CharField(
+        max_length=3,
+        default=CurrencyTypes.USD,
+        choices=CurrencyTypes.choices,
+    )
     price = models.DecimalField(max_digits=12, decimal_places=3, validators=[MinValueValidator(Decimal('0.01'))])
+
     cost_per_unit = models.DecimalField(max_digits=12, decimal_places=3, validators=[MinValueValidator(Decimal('0.01'))])
 
   
@@ -158,6 +173,10 @@ class ProductVariant(models.Model):
         null=True,
         blank=True
     )
+    
+    def save(self, *args, **kwargs):
+        self.validate_amount()
+        super(ProductVariant, self).save(*args, **kwargs)
 
     def __str__(self):
         variant_name = self.name if self.name else 'Default'
