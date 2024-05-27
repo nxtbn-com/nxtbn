@@ -107,12 +107,10 @@ class AbstractAddressModels(AbstractBaseModel):
 # ==========================
 
 
-#============================
-# Non-Abstract Base Model end
-# ==========================
+#===============================
+# Non-Abstract Base Model start
+# ==============================
 
-from django.core.exceptions import ValidationError
-from django.db import models
 
 class SiteSettings(models.Model):
     # default_language = models.CharField(max_length=10, default='en', help_text="Default language for the site.") # TODO: Put this in .env
@@ -144,7 +142,7 @@ class SiteSettings(models.Model):
 
 
 
-class CurrencyExchange(models.Model):
+class CurrencyExchange(AbstractBaseModel):
     base_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices) # base currency always should come from settings.BASE_CURRENCY
 
     target_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices)
@@ -153,9 +151,9 @@ class CurrencyExchange(models.Model):
         max_digits=12,
     )
 
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
+    class Meta:
+        ordering = ('-last_modified',)
+        unique_together = ('base_currency', 'target_currency',)
 
     
 
