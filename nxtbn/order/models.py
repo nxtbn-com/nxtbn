@@ -213,12 +213,34 @@ class Order(MonetaryMixin, AbstractBaseUUIDModel):
         return f"Order {self.id} - {self.status}"
 
 
-class OrderLineItem(models.Model):
+class OrderLineItem(MonetaryMixin, models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="line_items")
     variant = models.ForeignKey(ProductVariant, on_delete=models.PROTECT, related_name="+")
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     price_per_unit = models.DecimalField(max_digits=12, decimal_places=3, validators=[MinValueValidator(Decimal("0.01"))])
-    total_price = models.DecimalField(max_digits=12, decimal_places=3, validators=[MinValueValidator(Decimal("0.01"))])
+    
+
+    currency = models.CharField(
+        max_length=3,
+        default=CurrencyTypes.USD,
+        choices=CurrencyTypes.choices,
+    )
+    total_price = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(1)],
+    )
+
+    customer_currency = models.CharField(
+        max_length=3,
+        default=CurrencyTypes.USD,
+        choices=CurrencyTypes.choices,
+    )
+    total_price_in_customer_currency = models.DecimalField(
+        null=True,
+        blank=True,
+        decimal_places=4,
+        max_digits=12,
+    )
+
 
     def __str__(self):
         return f"{self.variant.product.name} - {self.variant.name} - Qty: {self.quantity}"
