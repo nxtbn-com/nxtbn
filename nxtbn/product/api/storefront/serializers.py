@@ -3,12 +3,12 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from django.db import transaction
 
-from nxtbn.core.currency.utils import convert_to_target_currency
 from nxtbn.core.models import CurrencyExchange
 from nxtbn.product.api.dashboard.serializers import RecursiveCategorySerializer
 from nxtbn.filemanager.api.dashboard.serializers import ImageSerializer
 from nxtbn.product.models import Product, Collection, Category, ProductVariant
 
+from nxtbn.core.currency.backend import currency_Backend
 
 class CategorySerializer(RecursiveCategorySerializer):
     pass
@@ -31,8 +31,8 @@ class ProductVariantSerializer(serializers.ModelSerializer):
             return obj.price
         else:
             currency_code = self.context.get('request').currency
-            rate = convert_to_target_currency(currency_code, obj.price)
-        return rate
+            price = currency_Backend().to_target_currency(currency_code, obj.price)
+        return price
 
 class ProductSerializer(serializers.ModelSerializer):
     default_variant = ProductVariantSerializer()
