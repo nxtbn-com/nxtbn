@@ -45,7 +45,6 @@ class CurrencyBackend(ABC):
                 target_currency=target_currency
             ).exchange_rate
             converted_amount = amount * exchange_rate
-            precision = get_currency_precision(target_currency)
             formatted_amount = format_currency(converted_amount, target_currency, locale='en_US', format_type='standard')
             return formatted_amount
         except CurrencyExchange.DoesNotExist:
