@@ -5,7 +5,7 @@ from django.urls import path
 from django.contrib import messages
 
 from nxtbn.core.models import CurrencyExchange, SiteSettings
-from nxtbn.core.currency.utils import currency_Backend
+from nxtbn.core.currency.backend import currency_Backend
 
 admin.site.register(SiteSettings)
 
