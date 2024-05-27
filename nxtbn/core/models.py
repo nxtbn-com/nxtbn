@@ -161,7 +161,7 @@ class CurrencyExchange(models.Model):
 
     def clean(self) -> None:
         if self.base_currency != settings.BASE_CURRENCY:
-            raise ValidationError("Base currency should be the same as the base currency in the settings.")
+            raise ValidationError(f"{settings.BASE_CURRENCY} allowed only as Base currency is {settings.BASE_CURRENCY} in settings")
         return super().clean()
     
     def humanize_rate(self):
