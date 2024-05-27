@@ -145,7 +145,7 @@ class SiteSettings(models.Model):
 class CurrencyExchange(AbstractBaseModel):
     base_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices) # base currency always should come from settings.BASE_CURRENCY
 
-    target_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices)
+    target_currency = models.CharField(max_length=3, choices=CurrencyTypes.choices) # TODO: ADD VALIDATOR SO THAT CANT ADD CURRENC THAT IS NOT ALLOWED CURRENCY
     exchange_rate = models.DecimalField(
         decimal_places=4,
         max_digits=12,
@@ -159,12 +159,14 @@ class CurrencyExchange(AbstractBaseModel):
 
     def clean(self) -> None:
         if self.base_currency != settings.BASE_CURRENCY:
-            raise ValidationError(f"{settings.BASE_CURRENCY} allowed only as Base currency is {settings.BASE_CURRENCY} in settings")
+            raise ValidationError(f"In base currency, {settings.BASE_CURRENCY} allowed only as Base currency is {settings.BASE_CURRENCY} in in settings.ALLOWED_CURRENCIES")
+        
+        if not self.target_currency in settings.ALLOWED_CURRENCIES:
+            raise ValidationError(f"{self.target_currency} is not allowed currency in settings.ALLOWED_CURRENCIES")
         return super().clean()
     
     def humanize_rate(self):
-        return 'TODO: Implement this method'
-        # return format_currency(self.exchange_rate, self.target_currency, locale='en_US')
+        return f'{self.base_currency}1  TO  {self.target_currency}{self.exchange_rate}'
 
     def __str__(self):
         return f"{self.base_currency} to {self.target_currency}"
