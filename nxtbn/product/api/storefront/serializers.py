@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from django.db import transaction
 
+from nxtbn.core.currency.utils import convert_to_target_currency
 from nxtbn.core.models import CurrencyExchange
 from nxtbn.product.api.dashboard.serializers import RecursiveCategorySerializer
 from nxtbn.filemanager.api.dashboard.serializers import ImageSerializer
@@ -29,9 +30,8 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         if not settings.IS_MULTI_CURRENCY: # If site is in single currency, no conversion required
             return obj.price
         else:
-            from nxtbn.core.currency.utils import currency_Backend
             currency_code = self.context.get('request').currency
-            rate = currency_Backend().convert_to_target_currency(currency_code, obj.price)
+            rate = convert_to_target_currency(currency_code, obj.price)
         return rate
 
 class ProductSerializer(serializers.ModelSerializer):
