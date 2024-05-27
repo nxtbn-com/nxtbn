@@ -101,7 +101,6 @@ class Product(PublishableModel, AbstractSEOModel):
     brand = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=25, default=ProductType.SIMPLE_PRODUCT, choices=ProductType.choices)
     related_to = models.ManyToManyField("self", blank=True)
-    currency = models.CharField(verbose_name="Currency", default="USD", max_length=10)
     default_variant = models.OneToOneField(
         "ProductVariant",
         blank=True,
