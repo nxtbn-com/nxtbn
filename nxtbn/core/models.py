@@ -119,7 +119,6 @@ class SiteSettings(models.Model):
     contact_email = models.EmailField(blank=True, null=True, help_text="Contact email for site administrators.")
     contact_phone = models.CharField(max_length=20, blank=True, null=True, help_text="Contact phone number for site administrators.")
     address = models.TextField(blank=True, null=True, help_text="Physical address of the site.")
-    timezone = models.CharField(max_length=50, blank=True, null=True, help_text="Timezone of the site.")
     logo = models.ImageField(upload_to='logos/', blank=True, null=True, help_text="Logo of the site.")
 
     def clean(self):
