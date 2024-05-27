@@ -30,6 +30,9 @@ class Address(AbstractAddressModels):
     email_address = models.EmailField(blank=True, null=True)
     is_default_delivery_address = models.BooleanField(default=False)
 
+    class Meta:
+        ordering = ('-is_default_delivery_address', 'last_name', 'first_name')
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}, {self.street_address}, {self.city}, {self.country}"
 
@@ -134,6 +137,9 @@ class Order(MonetaryMixin, AbstractBaseUUIDModel):
 
     promo_code = models.ForeignKey(PromoCode, on_delete=models.SET_NULL, null=True, blank=True)
     gift_card = models.ForeignKey(GiftCard, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        ordering = ('-created_at',) # # Most recent orders first
 
     def save(self, *args, **kwargs):
         self.validate_amount()

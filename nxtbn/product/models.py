@@ -110,6 +110,8 @@ class Product(PublishableModel, AbstractSEOModel):
     )
     collections = models.ManyToManyField(Collection, blank=True, related_name='products_in_collection')
 
+    class Meta:
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -173,6 +175,9 @@ class ProductVariant(MonetaryMixin, models.Model):
         null=True,
         blank=True
     )
+
+    class Meta:
+        ordering = ('price',)  # Order by price ascending
     
     def save(self, *args, **kwargs):
         self.validate_amount()
