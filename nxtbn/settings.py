@@ -342,6 +342,15 @@ SWAGGER_SETTINGS = { # "Token <YOUR TOKEN>""
     },
 }
 
+
+
+CELERY_BROKER_URL = get_env_var("REDIS_URL", "redis://redis:6379/1")
+CELERY_RESULT_BACKEND = get_env_var("REDIS_URL", "redis://redis:6379/1") 
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
 # ============================
 # NXTBN Specific Configuration
 # ============================

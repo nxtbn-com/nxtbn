@@ -24,6 +24,7 @@ pyjwt = "*"
 stripe = "*"
 py-money = "*"
 django-celery-beat = "*"
+redis = "*"
 
 [dev-packages]
 coverage = "*"
