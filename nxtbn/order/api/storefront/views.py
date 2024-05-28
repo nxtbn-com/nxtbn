@@ -51,7 +51,7 @@ class GuestUserOrderCreateAPIView(generics.CreateAPIView):
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'promo_code': openapi.Schema(type=openapi.TYPE_STRING),
-                        'total_price': openapi.Schema(type=openapi.TYPE_NUMBER),
+                        'total_price': openapi.Schema(type=openapi.TYPE_NUMBER, format='decimal'),
                         'shipping_address': openapi.Schema(type=openapi.TYPE_OBJECT),  # Adjust according to your AddressSerializer schema
                         'billing_address': openapi.Schema(type=openapi.TYPE_OBJECT),   # Adjust according to your AddressSerializer schema
                         'cart_data': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT)),  # Adjust according to your OrderItemSerializer schema

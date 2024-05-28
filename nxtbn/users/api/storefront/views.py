@@ -1,4 +1,3 @@
-# views.py
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -54,7 +53,6 @@ class SignupView(generics.CreateAPIView):
 
 
 class LoginView(generics.GenericAPIView):
-    permission_classes = (AllowAny,)
     permission_classes = (AllowAny,)
     serializer_class = LoginRequestSerializer
 
@@ -126,7 +124,7 @@ class TokenRefreshView(generics.GenericAPIView):
                     "user": user_data,
                     "token": {
                         "access": access_token,
-                        "refresh": refresh_token,
+                        # "refresh": refresh_token,
                     },
                 },
                 status=status.HTTP_200_OK,
