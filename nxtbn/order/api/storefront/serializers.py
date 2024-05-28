@@ -33,7 +33,7 @@ class GuestOrderSerializer(serializers.ModelSerializer):
     billing_address = AddressSerializer(write_only=True, required=False)
     cart_data = OrderItemSerializer(many=True, write_only=True)
     meta_data = serializers.SerializerMethodField()
-    total_price = serializers.FloatField(write_only=True)
+    total_price = serializers.DecimalField(write_only=True, max_digits=12, decimal_places=3) # accepting in unit and soring in subunit
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
