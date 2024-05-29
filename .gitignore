@@ -126,3 +126,5 @@ nxtbn/payment/plugins/*/
 nxtbn/plugins/sources/*/
 dashboard_openapi.yaml
 storefront_openapi.yaml
+
+celerybeat-schedule.db
