@@ -41,6 +41,7 @@ class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
     extra = 1
 
+@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductVariantInline]
     list_display = ('id','name', "slug", 'category', 'vendor', 'type',)
@@ -48,7 +49,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('name', 'summary', 'description')
     readonly_fields = ('last_modified_by',) 
 
-admin.site.register(Product, ProductAdmin)
 
-
-admin.site.register(ProductVariant)
+@admin.register(ProductVariant)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('id', 'currency', 'price', "currency")

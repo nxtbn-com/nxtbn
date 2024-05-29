@@ -91,7 +91,7 @@ class Order(MonetaryMixin, AbstractBaseUUIDModel):
         help_text="ISO currency code for the order. This is the base currency in which the total amount will be stored after converting from the customer's currency to the base currency. "
                 "For example, 'USD' for US Dollars. The base currency is defined in the settings."
     )
-    total_price = models.IntegerField(
+    total_price = models.BigIntegerField(
         null=True, blank=True, validators=[MinValueValidator(1)],
         help_text="Total amount of the order in cents, converted from the original currency (customer's currency) to the base currency. "
                 "For example, if the base currency is USD and the customer_currency is different (e.g., AUD), the total amount will be converted to USD. "

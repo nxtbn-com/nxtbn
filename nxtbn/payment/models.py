@@ -1,6 +1,8 @@
 from datetime import timezone
 from django.db import models
 
+from nxtbn.core import CurrencyTypes, MoneyFieldTypes
+from nxtbn.core.mixin import MonetaryMixin
 from nxtbn.core.models import  AbstractBaseUUIDModel
 from nxtbn.order import OrderStatus
 from nxtbn.order.models import Order
@@ -16,16 +18,29 @@ from nxtbn.payment.payment_manager import PaymentManager
 from nxtbn.payment.utils import get_plugin_list
 from nxtbn.users.admin import User
 
-class Payment(AbstractBaseUUIDModel):
+class Payment(MonetaryMixin, AbstractBaseUUIDModel):
+    money_validator_map = {
+        "payment_amount": {
+            "currency_field": "currency",
+            "type": MoneyFieldTypes.SUBUNIT,
+        },
+    }
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="+")
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="payment")
     payment_method = models.CharField(max_length=20, choices=PaymentMethod.choices)
 
     # For storing payment gateway references
     transaction_id = models.CharField(max_length=100, blank=True, null=True, unique=True)  
-
     payment_status = models.CharField(max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.AUTHORIZED)
-    payment_amount = models.DecimalField(max_digits=12, decimal_places=3, validators=[MinValueValidator(Decimal("0.01"))])
+
+    currency = models.CharField(
+        max_length=3,
+        default=CurrencyTypes.USD,
+        choices=CurrencyTypes.choices,
+    )
+    payment_amount = models.BigIntegerField(validators=[MinValueValidator(1)])
+
     gateway_response_raw = models.JSONField(null=True, blank=True)
     paid_at = models.DateTimeField(blank=True, null=True)
 
@@ -37,6 +52,10 @@ class Payment(AbstractBaseUUIDModel):
     """
     payment_plugin_id = models.CharField(max_length=100, blank=True, null=True)
     gateway_name = models.CharField(max_length=100, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.validate_amount()
+        super(Payment, self).save(*args, **kwargs)
 
     def authorize_payment(self, amount: Decimal, **kwargs): # TO DO: Do we still need this method?
         """Authorize payment through the specified gateway."""

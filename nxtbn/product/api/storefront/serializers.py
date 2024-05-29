@@ -18,7 +18,9 @@ class CollectionSerializer(serializers.ModelSerializer):
         model = Collection
         fields = ('id', 'name', 'description', 'is_active', 'image',)
 
-
+from nxtbn.core.currency.backend import currency_Backend
+from rest_framework import serializers
+from nxtbn.product.models import Product,  ProductVariant
 class ProductVariantSerializer(serializers.ModelSerializer):
     variant_image = ImageSerializer(many=True, read_only=True)
     price_in_target_currency = serializers.SerializerMethodField()
@@ -26,8 +28,8 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         model = ProductVariant
         fields = '__all__'
 
-    def get_price_in_target_currency(self, obj): # TODO: Implement logic for taxclass in future
-        if not settings.IS_MULTI_CURRENCY: # If site is in single currency, no conversion required
+    def get_price_in_target_currency(self, obj):
+        if not settings.IS_MULTI_CURRENCY:
             return obj.price
         else:
             currency_code = self.context.get('request').currency
