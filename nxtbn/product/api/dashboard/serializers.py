@@ -8,6 +8,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'name', 'description', 'parent', 'subcategories',)
+        ref_name = 'category_dashboard_get'
 
 
 class RecursiveCategorySerializer(serializers.ModelSerializer):
@@ -25,10 +26,12 @@ class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
         fields = ('id', 'name', 'description', 'is_active', 'image',)
+        ref_name = 'collection_dashboard_get'
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariant
+        ref_name = 'product_variant_dashboard_get'
         fields = ('id', 'product', 'name', 'compare_at_price', 'price', 'cost_per_unit', 'sku',)
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -36,6 +39,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product 
+        ref_name = 'product_dashboard_get'
         fields =  (
             'id',
             'name',
@@ -47,7 +51,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'brand',
             'type',
             'related_to',
-            'currency',
             'default_variant',
             'collections',
             'variants',

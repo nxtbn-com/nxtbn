@@ -124,3 +124,5 @@ nginx.conf
 # Ignore all subdirectories under plugins
 nxtbn/payment/plugins/*/
 nxtbn/plugins/sources/*/
+dashboard_openapi.yaml
+storefront_openapi.yaml
