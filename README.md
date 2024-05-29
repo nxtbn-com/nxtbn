@@ -29,9 +29,10 @@
 
 
 ## Other Repository:
-
 - nxtbn dashboard [https://github.com/nxtbn-com/nxtbn-dashboard](https://github.com/nxtbn-com/nxtbn-dashboard)
-- nxtbn documentation [https://github.com/nxtbn-com/nxtbn-docs](https://github.com/nxtbn-com/nxtbn-docs)
+
+## Documentation
+- nxtbn documentation [https://docs.nxtbn.com/](https://docs.nxtbn.com/)
 
 
 ![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)
