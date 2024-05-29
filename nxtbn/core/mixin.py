@@ -46,10 +46,8 @@ class MonetaryMixin:
                     Money(amount, currency)
                 elif config["type"] == MoneyFieldTypes.SUBUNIT:
                     Money.from_sub_units(amount, currency)
-            except InvalidAmountError as e:
-                raise ValidationError({field_name: f"Invalid amount '{amount}' for currency '{currency_str}': {str(e)}"})
-            except InvalidOperation as e:
-                raise ValidationError({field_name: f"Invalid operation for amount '{amount}' and currency '{currency_str}': {str(e)}"})
+            except (InvalidAmountError, InvalidOperation):
+                raise ValidationError({field_name: f"Invalid amount '{amount}' for currency '{currency_str}'"})
             
             if config.get("require_base_currency", False):
                 if currency_str != settings.BASE_CURRENCY:
