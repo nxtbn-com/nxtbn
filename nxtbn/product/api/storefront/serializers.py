@@ -63,7 +63,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'description',
             'brand',
             'type',
-            'currency',
             'category',
             'collections',
             'media',
