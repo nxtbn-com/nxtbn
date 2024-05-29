@@ -84,15 +84,7 @@ Welcome to **Next Billion Native Commerce (nxtbn)**, the ultimate solution for b
 - **Flexible Integration**: Seamlessly integrates with your existing ecosystem.
 - **Built with Django**: If you're familiar with Python and Django, nxtbn is a breeze to work with. You can seamlessly develop and manage your E-commerce platform without the need to learn new technologies.
 - **No-Code Management**: If you're not a technical person, that's fine—nxtbn allows you to deploy and manage your E-commerce platform without writing a single line of code. It's designed to be user-friendly and intuitive.
-
-
-## 🚀 Getting Started
-Ready to start? Here's what you need to do:
-1. **Clone the Repository**: Get the code from our [GitHub repository](https://github.com/nxtbn-com/nxtbn).
-2. **Install Dependencies**: Follow the installation guide to set up the necessary dependencies.
-3. **Run the Application**: Use our step-by-step instructions to start the nxtbn application on your local environment.
-4. **Explore Documentation**: Learn about the different features and customization options available.
-
+- 
 
 ## FAQ for Nxtbn
 
