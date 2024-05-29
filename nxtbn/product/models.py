@@ -180,7 +180,6 @@ class ProductVariant(MonetaryMixin, models.Model):
         ordering = ('price',)  # Order by price ascending
     
     def save(self, *args, **kwargs):
-        self.validate_amount()
         super(ProductVariant, self).save(*args, **kwargs)
 
     def __str__(self):
