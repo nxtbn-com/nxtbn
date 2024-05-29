@@ -14,7 +14,7 @@
   <table>
   <strong>Join our community: </strong> <br>
   <tr>
-      <td align="center"><a href="https://join.slack.com/t/newworkspace-ppn4922/shared_invite/"><img src="https://img.shields.io/badge/Slack-E01563?style=flat-squar&logo=slack&logoColor=white" alt="Slack"><br>Slack</a></td>
+      <td align="center"><a href="https://join.slack.com/t/nxtbn/shared_invite/zt-2itd6g4nk-uP1J6mcdRFga0AEdwxih~A"><img src="https://img.shields.io/badge/Slack-E01563?style=flat-squar&logo=slack&logoColor=white" alt="Slack"><br>Slack</a></td>
       <td align="center"><a href="https://docs.nxtbn.com/"><img src="https://img.shields.io/badge/Docs-4285F4?style=flat-squar&logo=googledocs&logoColor=white" alt="Docs"><br>Documentation</a></td>
       <td align="center"><a href="https://www.linkedin.com/company/nxtbn"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=flat-squar&logo=linkedin&logoColor=white" alt="LinkedIn"><br>LinkedIn</a></td><td align="center"><a href="https://www.facebook.com/nxtbncms/"><img src="https://img.shields.io/badge/Facebook-1877F2?style=flat-squar&logo=facebook&logoColor=white" alt="Facebook"><br>Facebook</a></td>
   </tr>
