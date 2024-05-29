@@ -11,11 +11,7 @@ API_INFO = openapi.Info(
     description="API documentation for nxtbn App",
 )
 
-DASHBOARD_API_DOCS_SCHEMA_VIEWS = get_schema_view(
-    API_INFO,
-    public=True,
-    permission_classes=(AllowAny,),
-    patterns=[
+DASHBOARD_PATTERNS = [
         path('user/dashboard/api/', include('nxtbn.users.api.dashboard.urls')),
         path('core/dashboard/api/', include('nxtbn.core.api.dashboard.urls')),
         path('invoice/dashboard/api/', include('nxtbn.invoice.api.dashboard.urls')),
@@ -25,15 +21,9 @@ DASHBOARD_API_DOCS_SCHEMA_VIEWS = get_schema_view(
         path('product/dashboard/api/', include('nxtbn.product.api.dashboard.urls')),
         path('payment/dashboard/api/', include('nxtbn.payment.api.dashboard.urls')),
         path('seo/dashboard/api/', include('nxtbn.seo.api.dashboard.urls')),
-    ]
-)
+]
 
-
-STOREFRONT_API_DOCS_SCHEMA_VIEWS = get_schema_view(
-    API_INFO,
-    public=True,
-    permission_classes=(AllowAny,),
-    patterns=[
+STOREFRONT_PATTERNS = [
         path('user/storefront/api/', include('nxtbn.users.api.storefront.urls')),
         path('core/storefront/api/', include('nxtbn.core.api.storefront.urls')),
         path('invoice/storefront/api/', include('nxtbn.invoice.api.storefront.urls')),
@@ -43,7 +33,23 @@ STOREFRONT_API_DOCS_SCHEMA_VIEWS = get_schema_view(
         path('product/storefront/api/', include('nxtbn.product.api.storefront.urls')),
         path('payment/storefront/api/', include('nxtbn.payment.api.storefront.urls')),
         path('seo/storefront/api/', include('nxtbn.seo.api.storefront.urls')),
-    ]
+]
+
+
+DASHBOARD_API_DOCS_SCHEMA_VIEWS = get_schema_view(
+    API_INFO,
+    public=True,
+    permission_classes=(AllowAny,),
+    patterns=DASHBOARD_PATTERNS
+)
+
+
+
+STOREFRONT_API_DOCS_SCHEMA_VIEWS = get_schema_view(
+    API_INFO,
+    public=True,
+    permission_classes=(AllowAny,),
+    patterns=STOREFRONT_PATTERNS
 )
 
 
