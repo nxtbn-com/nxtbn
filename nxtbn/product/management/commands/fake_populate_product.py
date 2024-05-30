@@ -8,6 +8,7 @@ from nxtbn.filemanager.models import Image
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
 import random
+from decimal import Decimal
 
 User = get_user_model()
 
@@ -77,9 +78,9 @@ class Command(BaseCommand):
             default_variant = ProductVariant.objects.create(
                 product=product,
                 name='Default',
-                price=random.uniform(10, 1000),
-                cost_per_unit=random.uniform(5, 500),
-                compare_at_price=random.uniform(15, 1500),
+                price=Decimal(f"{random.uniform(10, 1000):.2f}"),
+                cost_per_unit=Decimal(f"{random.uniform(5, 500):.2f}"),
+                compare_at_price=Decimal(f"{random.uniform(15, 1500):.2f}"),
                 sku=fake.uuid4(),
                 weight_unit=weight_unit[0],
                 weight_value=random.uniform(1, 1000),
@@ -94,9 +95,9 @@ class Command(BaseCommand):
                 variant = ProductVariant.objects.create(
                     product=product,
                     name=fake.word(),
-                    price=random.uniform(10, 1000),
-                    cost_per_unit=random.uniform(5, 500),
-                    compare_at_price=random.uniform(15, 1500),
+                    price=Decimal(f"{random.uniform(10, 1000):.2f}"),
+                    cost_per_unit=Decimal(f"{random.uniform(5, 500):.2f}"),
+                    compare_at_price=Decimal(f"{random.uniform(15, 1500):.2f}"),
                     sku=fake.uuid4(),
                     weight_unit=weight_unit[0],
                     weight_value=random.uniform(1, 1000),
