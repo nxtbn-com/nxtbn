@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-
+from decimal import Decimal, ROUND_DOWN
 
 
 from nxtbn.core import CurrencyTypes, MoneyFieldTypes
@@ -180,6 +180,7 @@ class ProductVariant(MonetaryMixin, models.Model):
         ordering = ('price',)  # Order by price ascending
     
     def save(self, *args, **kwargs):
+        self.price = Decimal(str(self.price)).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
         self.validate_amount()
         super(ProductVariant, self).save(*args, **kwargs)
 
