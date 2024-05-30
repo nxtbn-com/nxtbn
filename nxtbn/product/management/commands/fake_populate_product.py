@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.core.management.base import BaseCommand
 import requests
+from nxtbn.core.currency.utils import normalize_amount_currencywise
 from nxtbn.product.models import Category, Collection, Product, ProductVariant
 from django.contrib.auth import get_user_model
 from nxtbn.product import ProductType, StockStatus, WeightUnits
@@ -8,6 +10,7 @@ from nxtbn.filemanager.models import Image
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
 import random
+from tqdm import tqdm
 
 User = get_user_model()
 
@@ -31,7 +34,7 @@ class Command(BaseCommand):
         categories = Category.objects.all()
         collections = Collection.objects.all()
 
-        for _ in range(num_products):
+        for _ in tqdm(range(num_products)):
             category = random.choice(categories)
             collection = random.choice(collections)
             product_type = random.choice(ProductType.choices)
@@ -77,7 +80,8 @@ class Command(BaseCommand):
             default_variant = ProductVariant.objects.create(
                 product=product,
                 name='Default',
-                price=random.uniform(10, 1000),
+                currency=settings.BASE_CURRENCY,
+                price=normalize_amount_currencywise(random.uniform(10, 1000), settings.BASE_CURRENCY),
                 cost_per_unit=random.uniform(5, 500),
                 compare_at_price=random.uniform(15, 1500),
                 sku=fake.uuid4(),
@@ -94,7 +98,8 @@ class Command(BaseCommand):
                 variant = ProductVariant.objects.create(
                     product=product,
                     name=fake.word(),
-                    price=random.uniform(10, 1000),
+                    currency=settings.BASE_CURRENCY,
+                    price=normalize_amount_currencywise(random.uniform(10, 1000), settings.BASE_CURRENCY),
                     cost_per_unit=random.uniform(5, 500),
                     compare_at_price=random.uniform(15, 1500),
                     sku=fake.uuid4(),
