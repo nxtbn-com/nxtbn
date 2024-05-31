@@ -25,6 +25,7 @@ stripe = "*"
 py-money = "*"
 django-celery-beat = "*"
 redis = "*"
+django-countries = "*"
 
 [dev-packages]
 coverage = "*"
