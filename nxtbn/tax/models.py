@@ -1,6 +1,7 @@
 from django.db import models
 from django_countries.fields import CountryField
-from core.models import AbstractBaseModel
+from nxtbn.core.models import AbstractBaseModel
+from nxtbn.product.models import Product
 
 class TaxClass(models.Model):
     """
@@ -39,7 +40,7 @@ class TaxRate(AbstractBaseModel):
     rate = models.DecimalField(max_digits=5, decimal_places=2)
     tax_class = models.ForeignKey(TaxClass, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
-    exempt_products = models.ManyToManyField('Product', blank=True)
+    exempt_products = models.ManyToManyField(Product, blank=True)
 
     def is_applicable(self, product=None):
         """
