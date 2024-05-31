@@ -25,6 +25,9 @@ jobs:
     - name: Install dependencies
       run: pipenv install
 
+    - name: Install coverage
+      run: pipenv install coverage
+
     - name: Run Django tests with coverage
       env:
         DJANGO_SETTINGS_MODULE: nxtbn.settings
