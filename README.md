@@ -8,6 +8,17 @@
  </picture>
 </div>
 
+
+![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)
+![Django Version](https://img.shields.io/badge/Django-4.2-blue)  <!-- Supported Django versions -->
+![Last Commit](https://img.shields.io/github/last-commit/nxtbn-com/nxtbn)  <!-- Last commit time -->
+![Contributors](https://img.shields.io/github/contributors/nxtbn-com/nxtbn)  <!-- Number of contributors -->
+![Python Versions](https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
+![Dependencies](https://img.shields.io/librariesio/github/nxtbn-com/nxtbn)
+![Maintenance](https://img.shields.io/maintenance/yes/2024)  <!-- 'no' for unmaintained -->
+![Version](https://img.shields.io/github/v/tag/nxtbn-com/nxtbn)
+[![CI](https://github.com/nxtbn-com/nxtbn/actions/workflows/codecov.yaml/badge.svg)](https://github.com/nxtbn-com/nxtbn/actions/workflows/codecov.yaml)
+
 <br>
 
 <div align="center" width="100px">
@@ -33,16 +44,6 @@
 
 ## Documentation
 - nxtbn documentation [https://docs.nxtbn.com/](https://docs.nxtbn.com/)
-
-
-![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)
-![Django Version](https://img.shields.io/badge/Django-4.2-blue)  <!-- Supported Django versions -->
-![Last Commit](https://img.shields.io/github/last-commit/nxtbn-com/nxtbn)  <!-- Last commit time -->
-![Contributors](https://img.shields.io/github/contributors/nxtbn-com/nxtbn)  <!-- Number of contributors -->
-![Python Versions](https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
-![Dependencies](https://img.shields.io/librariesio/github/nxtbn-com/nxtbn)
-![Maintenance](https://img.shields.io/maintenance/yes/2024)  <!-- 'no' for unmaintained -->
-![Version](https://img.shields.io/github/v/tag/nxtbn-com/nxtbn)
 
 
 Welcome to **Next Billion Native Commerce (nxtbn)**, the ultimate solution for businesses looking for a flexible, scalable, and open-source E-commerce CMS. Built with Django and ReactJS, nxtbn stands out as the leading choice for enterprises seeking scalability and adaptability. 🚀
