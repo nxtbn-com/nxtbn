@@ -1,4 +1,38 @@
-- name: Upload coverage reports to Codecov
-    uses: codecov/codecov-action@v4.0.1
-    with:
-      token: ${{ secrets.CODECOV_TOKEN }}
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install pipenv
+      run: pip install pipenv
+
+    - name: Install dependencies
+      run: pipenv install
+
+    - name: Run Django tests with coverage
+      env:
+        DJANGO_SETTINGS_MODULE: nxtbn.settings
+      run: pipenv run coverage run --source='.' manage.py test
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+      env:
+        DJANGO_SETTINGS_MODULE: nxtbn.settings
