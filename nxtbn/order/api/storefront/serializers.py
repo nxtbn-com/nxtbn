@@ -33,7 +33,6 @@ class GuestOrderSerializer(serializers.ModelSerializer):
     shipping_address = AddressSerializer(write_only=True)
     billing_address = AddressSerializer(write_only=True, required=False)
     cart_data = OrderItemSerializer(many=True, write_only=True)
-    meta_data = serializers.SerializerMethodField()
     total_price = serializers.DecimalField(write_only=True, max_digits=12, decimal_places=3) # accepting in unit and soring in subunit
 
     def __init__(self, *args, **kwargs):
@@ -77,15 +76,16 @@ class GuestOrderSerializer(serializers.ModelSerializer):
 
         return order
     
-    def get_meta_data(self, obj):
-        meta_data = PaymentManager(
-            self.context.get('payment_plugin_id'),
-            self.context,
-        ).payment_url_with_meta(
-            order_alias=obj.alias,
-            order_instance=obj
-        )
-        return meta_data
+    # def get_meta_data(self, obj):
+    #     meta_data = PaymentManager(
+    #         self.context.get('payment_plugin_id'),
+    #         self.context,
+    #         order_instance=obj
+    #     ).payment_url_with_meta(
+    #         order_alias=obj.alias,
+    #         order_instance=obj
+    #     )
+    #     return meta_data
 
     # Do we still need this? 
     # def to_representation(self, instance):

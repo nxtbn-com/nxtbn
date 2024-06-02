@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from django.conf import settings
 from rest_framework import serializers
 from nxtbn.core.models import SiteSettings
+from nxtbn.order.models import Order
 from nxtbn.payment.models import Payment
 from babel.numbers import get_currency_precision
 
@@ -42,9 +43,10 @@ class PaymentPlugin(ABC):
     Defines the basic interface for interacting with payment gateways.
     """
 
-    def __init__(self, context: dict = None):
+    def __init__(self, context: dict = None, order: Optional[Order] = None):
         self.base_currency = settings.BASE_CURRENCY
         self.context = context or {}
+        self.order = order
 
     @abstractmethod
     def authorize(self, amount: Decimal, order_id: str, **kwargs):
@@ -212,14 +214,17 @@ class PaymentPlugin(ABC):
         Returns:
             str: The currency code extracted from the request.
         """
+        if self.order:
+            return self.order.customer_currency
+    
         if self.context['request'].data.get('currency_code'):
             return self.context['request'].data.get('currency_code')
-        else:
-            return self.context['request'].currency
+    
+        return self.context['request'].currency
     
     def total_amount_in_subunit(self, **kwargs) -> int:
         """
-            Adjust the decimal total amount by multiplying it by 100 and return as an integer.
+            Adjust the precision in subunit.
 
             Args:
                 amount (Decimal): The amount to be adjusted.

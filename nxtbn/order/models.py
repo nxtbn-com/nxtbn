@@ -99,7 +99,6 @@ class Order(MonetaryMixin, AbstractBaseUUIDModel):
     )
     customer_currency = models.CharField(
         max_length=3,
-        default=CurrencyTypes.USD,
         choices=CurrencyTypes.choices,
         help_text="ISO currency code of the original amount paid by the customer. "
                 "For example, 'AUD' for Australian Dollars."
