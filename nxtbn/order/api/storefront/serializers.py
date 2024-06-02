@@ -35,13 +35,6 @@ class GuestOrderSerializer(serializers.ModelSerializer):
     cart_data = OrderItemSerializer(many=True, write_only=True)
     total_price = serializers.DecimalField(write_only=True, max_digits=12, decimal_places=3) # accepting in unit and soring in subunit
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        payment_plugin_id = self.context.get('payment_plugin_id')
-        if payment_plugin_id:
-            self.fields['special_data'] = PaymentManager(payment_plugin_id).special_serializer()
-            self.fields['special_data'].write_only = True
-
     class Meta:
         model = Order
         fields = [
@@ -57,7 +50,7 @@ class GuestOrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         promo_code = validated_data.pop('promo_code', None)
         cart_data = validated_data.pop('cart_data')
-        special_data = validated_data.pop('special_data', {})
+        # special_data = validated_data.pop('special_data', {})
 
         shipping_address_data = validated_data.pop('shipping_address')
         billing_address_data = validated_data.pop('billing_address')
@@ -75,34 +68,7 @@ class GuestOrderSerializer(serializers.ModelSerializer):
             order.line_items.create(**item)
 
         return order
-    
-    # def get_meta_data(self, obj):
-    #     meta_data = PaymentManager(
-    #         self.context.get('payment_plugin_id'),
-    #         self.context,
-    #         order_instance=obj
-    #     ).payment_url_with_meta(
-    #         order_alias=obj.alias,
-    #         order_instance=obj
-    #     )
-    #     return meta_data
 
-    # Do we still need this? 
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-        
-    #     meta_data = PaymentManager(
-    #         self.context.get('payment_plugin_id',
-    #         self.context,
-    #     )).payment_url_with_meta(
-    #         order_alias=instance.alias,
-    #         order_instance=instance
-    #     )
-    #     # Include 'meta_data' in the response
-    #     representation['meta_data'] = meta_data
-    #     return representation
-
-    
 
 class AuthenticatedUserOrderSerializer(serializers.ModelSerializer): # TO DO: Test with frontend passing both saved address id and promo code etc?
     currency_code = serializers.CharField(write_only=True, required=False)
@@ -110,11 +76,6 @@ class AuthenticatedUserOrderSerializer(serializers.ModelSerializer): # TO DO: Te
     cart_data = serializers.ListField(child=serializers.DictField(), write_only=True, required=False)
     meta_data =  serializers.ListField(child=serializers.DictField(), write_only=True, required=False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        payment_plugin_id = self.context.get('payment_plugin_id')
-        if payment_plugin_id:
-            self.fields['special_data'] = PaymentManager(payment_plugin_id).special_serializer()
 
     class Meta:
         model = Order
@@ -145,17 +106,6 @@ class AuthenticatedUserOrderSerializer(serializers.ModelSerializer): # TO DO: Te
             shipping_address=shipping_address,
             billing_address=billing_address,
             **validated_data
-        )
-
-        payment = Payment.objects.create(
-            order=order,
-            payment_plugin_id=getway,
-            payment_method= PaymentMethod.CASH_ON_DELIVERY if validated_data.get('getway') else PaymentMethod.CREDIT_CARD,
-            gateway_response_raw=meta_data
-        )
-        payment.authorize_payment(
-            validated_data.get('amount'),
-            order.id,
         )
         
 

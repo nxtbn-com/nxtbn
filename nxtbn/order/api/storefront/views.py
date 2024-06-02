@@ -43,49 +43,7 @@ class GuestUserOrderCreateAPIView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = GuestOrderSerializer
 
-    @swagger_auto_schema(
-        responses={
-            201: openapi.Response(
-                description="Order created",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'promo_code': openapi.Schema(type=openapi.TYPE_STRING),
-                        'total_price': openapi.Schema(type=openapi.TYPE_NUMBER, format='decimal'),
-                        'shipping_address': openapi.Schema(type=openapi.TYPE_OBJECT),  # Adjust according to your AddressSerializer schema
-                        'billing_address': openapi.Schema(type=openapi.TYPE_OBJECT),   # Adjust according to your AddressSerializer schema
-                        'cart_data': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT)),  # Adjust according to your OrderItemSerializer schema
-                        'meta_data': openapi.Schema(type=openapi.TYPE_OBJECT),
-                    }
-                )
-            )
-        }
-    )
 
-    def get_serializer_context(self):
-        """
-        Get the serializer context with the payment gateway ID.
-
-        This method retrieves the payment gateway ID from the URL kwargs and adds it to the serializer context.
-        """
-        context = super().get_serializer_context()
-        payment_plugin_id = self.kwargs.get('payment_plugin_id')
-        if payment_plugin_id:
-            context['payment_plugin_id'] = payment_plugin_id
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Dispatch the request.
-
-        This method validates whether the provided payment gateway ID matches any defined payment gateway
-        in the settings. If not, it raises a 404 error.
-        """
-        payment_plugin_id = self.kwargs.get('payment_plugin_id')
-        if payment_plugin_id:
-            if not  check_plugin_directory(payment_plugin_id):
-                raise Http404(f"Payment gateway '{payment_plugin_id}' is not installed plugin.")
-        return super().dispatch(request, *args, **kwargs)
 
 
 
@@ -98,28 +56,3 @@ class OrderCreateAPIView(generics.CreateAPIView):
     """
 
     serializer_class = AuthenticatedUserOrderSerializer
-
-    def get_serializer_context(self):
-        """
-        Get the serializer context with the payment gateway ID.
-
-        This method retrieves the payment gateway ID from the URL kwargs and adds it to the serializer context.
-        """
-        context = super().get_serializer_context()
-        payment_plugin_id = self.kwargs.get('payment_plugin_id')
-        if payment_plugin_id:
-            context['payment_plugin_id'] = payment_plugin_id
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Dispatch the request.
-
-        This method validates whether the provided payment gateway ID matches any defined payment gateway
-        in the settings. If not, it raises a 404 error.
-        """
-        payment_plugin_id = self.kwargs.get('payment_plugin_id')
-        if payment_plugin_id:
-            if payment_plugin_id.lower() not in getattr(settings, 'PAYMENT_GATEWAYS'):
-                raise Http404(f"Payment gateway '{payment_plugin_id}' is not implemented.")
-        return super().dispatch(request, *args, **kwargs)
