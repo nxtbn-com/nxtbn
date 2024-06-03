@@ -68,6 +68,7 @@ Welcome to **Next Billion Native Commerce (nxtbn)**, the ultimate solution for b
 - **Search Infrastructure Integration**: Seamlessly integrate with major search technologies like Algolia, Elasticsearch, Azure Cognitive Search, Apache Solr, Typesense, OpenSearch, and many more to enhance the user experience through fast and efficient search capabilities.
 - **Social Media Authentication & More**: Includes built-in support for social media authentication, OTP, SMS gateway, email SMTP, push notifications, and marketing tools, so you don't need to reinvent the wheel.
 
+![Django NXTBN ecommerce dashboard](https://raw.githubusercontent.com/nxtbn-com/nxtbn-docs/main/source/_static/dashboard.png)
   
 ## What Makes Nxtbn Special?
 
