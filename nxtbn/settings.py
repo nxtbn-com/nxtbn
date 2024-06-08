@@ -20,14 +20,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
-
 import sys
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
-import os
 
 def get_env_var(key, default=None, var_type=str):
     value = os.getenv(key)
