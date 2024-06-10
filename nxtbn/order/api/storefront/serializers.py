@@ -44,7 +44,7 @@ class GuestOrderSerializer(serializers.ModelSerializer):
             'shipping_address',
             'billing_address',
             'cart_data',
-            'meta_data',
+            # 'meta_data',
         ]
     
     def create(self, validated_data):
