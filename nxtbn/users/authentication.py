@@ -31,5 +31,5 @@ class JWTAuthentication(BaseAuthentication):
             user = jwt_manager.verify_jwt_token(token)
             if user:
                 return (user, None)
-            raise AuthenticationFailed("Invalid or expired token")
+            raise AuthenticationFailed({"detail": "Invalid or expired token", "code": "token_invalid_or_expired"})
         return None
