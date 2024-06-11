@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from nxtbn.users.api.dashboard.serializers import DashboardLoginSerializer
 from nxtbn.users.api.storefront.serializers import JwtBasicUserSerializer
+from nxtbn.users.api.storefront.views import TokenRefreshView
 from nxtbn.users.utils.jwt_utils import JWTManager
 
 class LoginView(generics.GenericAPIView):
@@ -43,3 +44,7 @@ class LoginView(generics.GenericAPIView):
             )
 
         return Response({"detail": _("Invalid credentials")}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DashboardTokenRefreshView(TokenRefreshView):
+    pass
