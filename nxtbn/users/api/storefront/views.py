@@ -1,6 +1,5 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate
@@ -14,16 +13,16 @@ from nxtbn.users.api.storefront.serializers import (
     RefreshSerializer,
     SignupSerializer,
 )
-from nxtbn.users.utils.jwt_utils import (
-    generate_access_token,
-    generate_refresh_token,
-    verify_jwt_token,
-)
+from nxtbn.users.utils.jwt_utils import JWTManager
 
-# SignupView handles user registration
+
 class SignupView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SignupSerializer
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.jwt_manager = JWTManager()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -34,10 +33,9 @@ class SignupView(generics.CreateAPIView):
 
         response_data = {"detail": _("Verification e-mail sent. Please check your email.")}
 
-        # If email verification is not mandatory, include access and refresh tokens
         if allauth_settings.EMAIL_VERIFICATION != allauth_settings.EmailVerificationMethod.MANDATORY:
-            access_token = generate_access_token(user)
-            refresh_token = generate_refresh_token(user)
+            access_token = self.jwt_manager.generate_access_token(user)
+            refresh_token = self.jwt_manager.generate_refresh_token(user)
 
             user_data = JwtBasicUserSerializer(user).data
             response_data = {
@@ -51,22 +49,23 @@ class SignupView(generics.CreateAPIView):
         return Response(response_data, status=status.HTTP_201_CREATED)
 
 
-
 class LoginView(generics.GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = LoginRequestSerializer
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.jwt_manager = JWTManager()
+
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
 
         email = request.data.get("email")
         password = request.data.get("password")
 
         user = authenticate(email=email, password=password)
         if user:
-            # Check if email verification is mandatory
             email_verification_required = (
                 allauth_settings.EMAIL_VERIFICATION == allauth_settings.EmailVerificationMethod.MANDATORY
             )
@@ -78,8 +77,8 @@ class LoginView(generics.GenericAPIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
-            access_token = generate_access_token(user)
-            refresh_token = generate_refresh_token(user)
+            access_token = self.jwt_manager.generate_access_token(user)
+            refresh_token = self.jwt_manager.generate_refresh_token(user)
 
             user_data = JwtBasicUserSerializer(user).data
             return Response(
@@ -100,10 +99,14 @@ class TokenRefreshView(generics.GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RefreshSerializer
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.jwt_manager = JWTManager()
+
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         refresh_token = request.data.get("refresh_token")
 
         if not refresh_token:
@@ -112,11 +115,11 @@ class TokenRefreshView(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user = verify_jwt_token(refresh_token)
+        user = self.jwt_manager.verify_jwt_token(refresh_token)
 
         if user:
-            access_token = generate_access_token(user)
-            refresh_token = generate_refresh_token(user)
+            access_token = self.jwt_manager.generate_access_token(user)
+            new_refresh_token = self.jwt_manager.generate_refresh_token(user)
 
             user_data = JwtBasicUserSerializer(user).data
             return Response(
@@ -124,7 +127,7 @@ class TokenRefreshView(generics.GenericAPIView):
                     "user": user_data,
                     "token": {
                         "access": access_token,
-                        # "refresh": refresh_token,
+                        "refresh": new_refresh_token,
                     },
                 },
                 status=status.HTTP_200_OK,
