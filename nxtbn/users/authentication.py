@@ -1,7 +1,7 @@
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from nxtbn.users.utils.jwt_utils import verify_jwt_token
+from nxtbn.users.utils.jwt_utils import JWTManager
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     """
     Session authentication without CSRF protection. 
@@ -24,10 +24,11 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class JWTAuthentication(BaseAuthentication):
     def authenticate(self, request):
+        jwt_manager = JWTManager()
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
-            user = verify_jwt_token(token)
+            user = jwt_manager.verify_jwt_token(token)
             if user:
                 return (user, None)
             raise AuthenticationFailed("Invalid or expired token")
