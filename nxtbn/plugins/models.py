@@ -39,6 +39,17 @@ class Plugin(AbstractBaseModel):
         unique_together = ('name', 'plugin_type')
         ordering = ('name',)
 
+    def clean(self):
+        super().clean()
+        if self.plugin_type == PluginType.CURRENCY_BACKEND and self.is_active:
+            existing_active_backends = Plugin.objects.filter(
+                plugin_type=PluginType.CURRENCY_BACKEND,
+                is_active=True,
+                has_deleted=False
+            ).exclude(pk=self.pk)
+            if existing_active_backends.exists():
+                raise ValidationError("There can only be one active currency backend.")
+
     def __str__(self):
         return self.name
     
