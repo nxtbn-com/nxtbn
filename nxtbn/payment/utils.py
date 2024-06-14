@@ -37,17 +37,3 @@ def security_validation(path_name): # Do we need this?
     """Perform security validation on the provided path name."""
     if not is_secure_path_name(path_name):
         raise ValueError("Invalid path name: {}".format(path_name))
-
-
-
-
-def get_plugin_list():
-    """Return a list of directory names in the plugins folder."""
-    plugins_dir = os.path.join(settings.BASE_DIR, 'nxtbn', 'payment', 'plugins')
-    
-    # Check if the plugins directory exists
-    if not os.path.exists(plugins_dir):
-        return []
-    
-    # List only directories in the plugins folder
-    return [d for d in os.listdir(plugins_dir) if os.path.isdir(os.path.join(plugins_dir, d))]
