@@ -35,3 +35,7 @@ class Plugin(AbstractBaseModel):
 
     def __str__(self):
         return self.name
+    
+    def to_module(self):
+        """Convert path from slash notation to dot notation."""
+        return self.path.replace('/', '.')

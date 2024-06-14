@@ -8,12 +8,6 @@ def check_plugin_directory(payment_plugin_id):
     return os.path.exists(plugin_path)
 
 
-def get_plugin_path(payment_plugin_id):
-    """Get the full path to the directory for the given plugin."""
-    return f'nxtbn.payment.plugins.{payment_plugin_id}.gateway'
-
-
-
 def is_secure_path_name(path_name):
     """Validate the path name to prevent path injection attacks."""
     # Check if the path name contains more than one dot character
@@ -39,7 +33,7 @@ def is_secure_path_name(path_name):
     return True
 
 
-def security_validation(path_name):
+def security_validation(path_name): # Do we need this?
     """Perform security validation on the provided path name."""
     if not is_secure_path_name(path_name):
         raise ValueError("Invalid path name: {}".format(path_name))
