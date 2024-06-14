@@ -28,14 +28,31 @@ class Plugin(AbstractBaseModel):
         max_length=20,
         choices=PluginType.choices,
         default=PluginType.GENERAL,
+        unique=True,
     )
     is_active = models.BooleanField(default=True)
+    has_deleted = models.BooleanField(default=False)
     home_url = models.URLField(null=True, blank=True)
     documentation_url = models.URLField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('name', 'plugin_type')
+        ordering = ('name',)
+
+    def clean(self):
+        super().clean()
+        if self.plugin_type == PluginType.CURRENCY_BACKEND and self.is_active:
+            existing_active_backends = Plugin.objects.filter(
+                plugin_type=PluginType.CURRENCY_BACKEND,
+                is_active=True,
+                has_deleted=False
+            ).exclude(pk=self.pk)
+            if existing_active_backends.exists():
+                raise ValidationError("There can only be one active currency backend.")
 
     def __str__(self):
         return self.name
     
-    def to_module(self):
+    def to_dotted_path(self):
         """Convert path from slash notation to dot notation."""
         return self.path.replace('/', '.')
