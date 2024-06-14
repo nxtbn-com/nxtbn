@@ -28,14 +28,20 @@ class Plugin(AbstractBaseModel):
         max_length=20,
         choices=PluginType.choices,
         default=PluginType.GENERAL,
+        unique=True,
     )
     is_active = models.BooleanField(default=True)
+    has_deleted = models.BooleanField(default=False)
     home_url = models.URLField(null=True, blank=True)
     documentation_url = models.URLField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('name', 'plugin_type')
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
     
-    def to_module(self):
+    def to_dotted_path(self):
         """Convert path from slash notation to dot notation."""
         return self.path.replace('/', '.')

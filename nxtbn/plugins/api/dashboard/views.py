@@ -28,7 +28,8 @@ from rest_framework import serializers
 
 
 from nxtbn.plugins import PluginType
-from nxtbn.plugins.api.dashboard.serializers import PluginInstallSerializer, PluginInstallWithZIPURLSerializer, ZipFileUploadSerializer
+from nxtbn.plugins.api.dashboard.serializers import PluginInstallSerializer, PluginInstallWithZIPURLSerializer, PluginSerializer, PluginUpdateSerializer, ZipFileUploadSerializer
+from nxtbn.plugins.manager import PluginPathManager
 from nxtbn.plugins.models import Plugin
 
 PLUGIN_BASE_DIR = getattr(settings, 'PLUGIN_BASE_DIR')
@@ -205,3 +206,43 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
             {'message': 'Plugin downloaded, extracted, and registered successfully'},
             status=status.HTTP_201_CREATED,
         )
+    
+
+class PluginDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    lookup_field = 'name'
+    queryset = Plugin.objects.filter(delete=False)
+    serializer_class = PluginSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return self.serializer_class
+        else:
+            return PluginUpdateSerializer
+        
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        PluginPathManager.remove_plugins(instance.name, instance.plugin_type)
+        
+        # Mark the instance as deleted
+        instance.has_deleted = True
+        instance.save()
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+
+class UnregisteredPluginsAPIView(APIView):
+    def get(self, request, format=None):
+        plugin_base_dir = settings.PLUGIN_BASE_DIR
+        all_directories = {name for name in os.listdir(plugin_base_dir) if os.path.isdir(os.path.join(plugin_base_dir, name))}
+        
+        registered_plugins = set(Plugin.objects.values_list('name', flat=True))
+        
+        unregistered_plugins = list(all_directories - registered_plugins)
+        
+        return Response(unregistered_plugins, status=status.HTTP_200_OK)
+    
+
+class PluginRegisterView(generics.CreateAPIView):
+    queryset = Plugin.objects.all()
+    serializer_class = PluginSerializer
