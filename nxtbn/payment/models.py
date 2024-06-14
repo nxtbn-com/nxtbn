@@ -15,7 +15,8 @@ from django.core.exceptions import ValidationError
 
 from nxtbn.payment import PaymentMethod, PaymentStatus
 from nxtbn.payment.payment_manager import PaymentManager
-from nxtbn.payment.utils import get_plugin_list
+from nxtbn.plugins import PluginType
+from nxtbn.plugins.manager import PluginPathManager
 from nxtbn.users.admin import User
 
 class Payment(MonetaryMixin, AbstractBaseUUIDModel):
@@ -113,11 +114,9 @@ class Payment(MonetaryMixin, AbstractBaseUUIDModel):
 
     def clean(self):
         super().clean()
-        valid_gateways = get_plugin_list()
-        if self.payment_plugin_id and self.payment_plugin_id not in valid_gateways:
+        if not PluginPathManager.check_plugin_path(self.payment_plugin_id, PluginType.PAYMENT_PROCESSOR):
             raise ValidationError(
                 f"Invalid payment gateway: '{self.payment_plugin_id}'. "
-                f"Allowed gateways are: {', '.join(valid_gateways)}."
             )
 
 

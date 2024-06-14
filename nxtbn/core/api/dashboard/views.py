@@ -29,10 +29,9 @@ from rest_framework import serializers
 from nxtbn.plugins import PluginType
 from nxtbn.core.api.dashboard.serializers import PluginInstallSerializer, ZipFileUploadSerializer
 
-PLUGIN_DIR = getattr(settings, 'PLUGIN_DIR')
-PAYMENT_PLUGIN_DIR =  getattr(settings, 'PAYMENT_PLUGIN_DIR')
+PLUGIN_BASE_DIR = getattr(settings, 'PLUGIN_BASE_DIR')
 
-os.makedirs(PLUGIN_DIR, exist_ok=True)
+os.makedirs(PLUGIN_BASE_DIR, exist_ok=True)
 
 def get_module_path(module_name):
     spec = importlib.util.find_spec(module_name)
@@ -50,9 +49,9 @@ class PlugginsInstallViaGitView(generics.CreateAPIView):
         
         # Determine the target directory based on the plugin type
         if plugin_type == PluginType.PAYMENT_PROCESSOR:
-            target_dir_base =  get_module_path(PAYMENT_PLUGIN_DIR)
+            target_dir_base =  get_module_path(PLUGIN_BASE_DIR)
         else:
-            target_dir_base = get_module_path(PLUGIN_DIR)
+            target_dir_base = get_module_path(PLUGIN_BASE_DIR)
         
         # Clone the repository
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -89,12 +88,12 @@ class PlugginsUploadView(APIView):
         if serializer.is_valid():
             uploaded_file = serializer.validated_data['file']
 
-            storage = FileSystemStorage(location=PLUGIN_DIR)
+            storage = FileSystemStorage(location=PLUGIN_BASE_DIR)
             file_path = storage.save(uploaded_file.name, uploaded_file)
 
-            full_file_path = os.path.join(PLUGIN_DIR, uploaded_file.name)
+            full_file_path = os.path.join(PLUGIN_BASE_DIR, uploaded_file.name)
             with zipfile.ZipFile(full_file_path, 'r') as zip_ref:
-                zip_ref.extractall(PLUGIN_DIR)
+                zip_ref.extractall(PLUGIN_BASE_DIR)
 
             return Response(
                 {'message': 'ZIP file uploaded and extracted successfully'},

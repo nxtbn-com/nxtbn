@@ -1,15 +1,13 @@
-import os
 from decimal import Decimal
 from typing import Optional
-from django.conf import settings
-from django.core.exceptions import ValidationError
 from importlib import import_module
 
 
 import logging
 
 from nxtbn.order.models import Order
-from nxtbn.payment.utils import check_plugin_directory, get_plugin_path, security_validation
+from nxtbn.plugins import PluginType
+from nxtbn.plugins.manager import PluginPathManager
 
 logger = logging.getLogger(__name__)
 
@@ -28,12 +26,7 @@ class PaymentManager:
     def select_gateway(self, payment_plugin_id: str, context: dict = {}, order: Optional[Order] = None):
         """Select the appropriate gateway based on the payment method."""
 
-        security_validation(payment_plugin_id)
-        
-        if not  check_plugin_directory(payment_plugin_id):
-            raise ValidationError("No getway class found")
-        
-        gateway_path = get_plugin_path(payment_plugin_id=payment_plugin_id, context=context, order=order)                        
+        gateway_path = PluginPathManager.get_plugin_path(payment_plugin_id, PluginType.PAYMENT_PROCESSOR) + '.gateway'              
 
         module_name, class_name = gateway_path.rsplit(".", 1)
         module = import_module(module_name)

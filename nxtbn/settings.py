@@ -352,8 +352,7 @@ CELERY_TIMEZONE = TIME_ZONE
 # NXTBN Specific Configuration
 # ============================
 
-PLUGIN_DIR = 'nxtbn.plugins.sources'
-PAYMENT_PLUGIN_DIR = 'nxtbn.payment.plugins'
+PLUGIN_BASE_DIR = 'nxtbn.plugins.sources'
 
 NXTBN_JWT_SETTINGS = {
     'SECRET_KEY': get_env_var("JWT_SECRET_KEY", SECRET_KEY), # default django's secret key

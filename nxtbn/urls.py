@@ -101,12 +101,12 @@ urlpatterns += [
 
 plugin_urls = []
 
-PLUGIN_DIR = getattr(settings, 'PLUGIN_DIR')
+PLUGIN_BASE_DIR = getattr(settings, 'PLUGIN_BASE_DIR')
 
-if os.path.exists(PLUGIN_DIR):
-    for plugin in os.listdir(PLUGIN_DIR):
+if os.path.exists(PLUGIN_BASE_DIR):
+    for plugin in os.listdir(PLUGIN_BASE_DIR):
         try:
-            module_path = f"{PLUGIN_DIR}.{plugin}.urls"
+            module_path = f"{PLUGIN_BASE_DIR}.{plugin}.urls"
             module = importlib.import_module(module_path)
             plugin_urls.append(path(plugin, include(module_path)))
         except Exception as e:
