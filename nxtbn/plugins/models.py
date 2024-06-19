@@ -39,6 +39,7 @@ class Plugin(AbstractBaseModel):
         unique=True,
     )
     is_active = models.BooleanField(default=True)
+    is_default = models.BooleanField(default=False)
     has_deleted = models.BooleanField(default=False)
     home_url = models.URLField(null=True, blank=True)
     documentation_url = models.URLField(null=True, blank=True)

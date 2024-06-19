@@ -6,4 +6,5 @@ class PluginType(models.TextChoices):
     CURRENCY_BACKEND = 'CURRENCY_BACKEND', _('Currency Backend')
     SMS_SERVICE = 'SMS_SERVICE', _('SMS Service')
     EMAIL_SERVICE = 'EMAIL_SERVICE', _('Email Service')
+    INVOICE = 'INVOICE', _('Invoice')
     GENERAL = 'GENERAL', _('General')

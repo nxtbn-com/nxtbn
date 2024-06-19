@@ -152,4 +152,10 @@ class PaymentManager:
                 int: The adjusted amount as an integer.
         """
         return self.gateway.total_amount_in_subunit()
+    
+    def get_invoice_code(self, order_id, **kwargs) -> str:
+        return self.gateway.get_invoice_code(order_id, **kwargs)
+    
+    def get_invoice_url(self, order_id: str, **kwargs) -> str:
+        return self.gateway.get_invoice_url(order_id, **kwargs)
         
