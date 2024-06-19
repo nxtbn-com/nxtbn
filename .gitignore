@@ -118,12 +118,18 @@ nginx.conf
 
 
 
-# Don't ignore the __init__.py file
-!nxtbn/payment/plugins/__init__.py
+# Ignore all files and folders in nxtbn/plugins/sources/
+nxtbn/plugins/sources/*
 
-# Ignore all subdirectories under plugins
-nxtbn/payment/plugins/*/
-nxtbn/plugins/sources/*/
+# Do not ignore directories or files that start with 'nxt'
+!nxtbn/plugins/sources/nxt*/
+!nxtbn/plugins/sources/nxt*
+
+# Do not ignore the __init__.py file
+!nxtbn/plugins/sources/__init__.py
+
+
+
 dashboard_openapi.yaml
 storefront_openapi.yaml
 
