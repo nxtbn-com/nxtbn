@@ -15,6 +15,14 @@ def validate_plugin_name(value):
             _('Name can only contain lowercase letters, numbers, and underscores.')
         )
 
+
+fixed_dirs = {
+    PluginType.CURRENCY_BACKEND: 'currency_backend',
+    PluginType.SMS_SERVICE: 'sms_service',
+    PluginType.EMAIL_SERVICE: 'email_service',
+}
+
+
 class Plugin(AbstractBaseModel):
     name = models.CharField(
         max_length=255,
@@ -41,14 +49,24 @@ class Plugin(AbstractBaseModel):
 
     def clean(self):
         super().clean()
-        if self.plugin_type == PluginType.CURRENCY_BACKEND and self.is_active:
-            existing_active_backends = Plugin.objects.filter(
-                plugin_type=PluginType.CURRENCY_BACKEND,
+        # Derive the unique plugin types from the predefined folders
+        unique_plugin_types = fixed_dirs.keys()
+
+        if self.plugin_type in unique_plugin_types and self.is_active:
+            existing_active_plugins = Plugin.objects.filter(
+                plugin_type=self.plugin_type,
                 is_active=True,
                 has_deleted=False
             ).exclude(pk=self.pk)
-            if existing_active_backends.exists():
-                raise ValidationError("There can only be one active currency backend.")
+            if existing_active_plugins.exists():
+                raise ValidationError(f"There can only be one active plugin for {self.plugin_type}.")
+
+        # Ensure the path is set correctly for predefined plugin types
+        predefined_folder = fixed_dirs.get(self.plugin_type, '')
+        if predefined_folder:
+            expected_path = make_path(f"{settings.PLUGIN_BASE_DIR}/{predefined_folder}")
+            if self.path != expected_path:
+                raise ValidationError(f"The path for {self.plugin_type.label} must be {expected_path}.")
 
     def __str__(self):
         return self.name

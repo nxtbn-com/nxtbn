@@ -24,7 +24,7 @@ from rest_framework.parsers import JSONParser
 
 from rest_framework import serializers
 
-
+from nxtbn.plugins.models import fixed_dirs
 
 
 from nxtbn.plugins import PluginType
@@ -64,7 +64,7 @@ class PlugginsInstallViaGitView(generics.CreateAPIView):
                 shutil.rmtree(git_dir)
             
             # Move the cloned directory to the target directory
-            plugin_name = os.path.basename(git_url).rsplit('.', 1)[0]
+            plugin_name = fixed_dirs.get(plugin_type, os.path.basename(git_url).rsplit('.', 1)[0])
             target_dir = os.path.join(target_dir_base, plugin_name)
             if os.path.exists(target_dir):
                 shutil.rmtree(target_dir)
@@ -118,7 +118,7 @@ class PlugginsUploadView(APIView):
                     zip_ref.extractall(tmpdirname)
 
                 # Determine the plugin name and target directory
-                plugin_name = os.path.splitext(uploaded_file.name)[0]
+                plugin_name = fixed_dirs.get(plugin_type, os.path.splitext(uploaded_file.name)[0])
                 source_dir = os.path.join(tmpdirname, plugin_name)
                 target_dir = os.path.join(PLUGIN_BASE_DIR, plugin_name)
 
@@ -175,7 +175,7 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
                 zip_ref.extractall(tmpdirname)
 
             # Determine the plugin name and target directory
-            plugin_name = os.path.basename(zip_url).rsplit('.', 1)[0]
+            plugin_name = fixed_dirs.get(plugin_type, os.path.basename(zip_url).rsplit('.', 1)[0])
             source_dir = os.path.join(tmpdirname, plugin_name)
             target_dir = os.path.join(get_module_path(PLUGIN_BASE_DIR), plugin_name)
 
