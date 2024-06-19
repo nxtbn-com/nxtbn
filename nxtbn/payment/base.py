@@ -260,3 +260,27 @@ class PaymentPlugin(ABC):
         precision = get_currency_precision(self.get_currency_code())
         unit_amount = Decimal(amount) / (10 ** precision)
         return unit_amount
+    
+    def get_invoice_code(self, order_id, **kwargs) -> str:
+        """
+            Generate a unique invoice code for the order.
+
+            Args:
+                order_id (str): The unique identifier for the order.
+
+            Returns:
+                str: The generated invoice code.
+        """
+        pass
+    
+    def get_invoice_url(self, order_id: str, **kwargs) -> str:
+        """
+            Get the invoice URL for the order.
+
+            Args:
+                order_id (str): The unique identifier for the order.
+
+            Returns:
+                str: The URL for the invoice.
+        """
+        pass
