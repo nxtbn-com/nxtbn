@@ -85,6 +85,8 @@ urlpatterns = [
 
     path('seo/storefront/api/', include('nxtbn.seo.api.storefront.urls')),
     path('seo/dashboard/api/', include('nxtbn.seo.api.dashboard.urls')),
+
+    path('plugins/dashboard/api/', include('nxtbn.plugins.api.dashboard.urls')),
 ]
 
 urlpatterns += [

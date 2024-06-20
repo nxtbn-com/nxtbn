@@ -210,7 +210,7 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
 
 class PluginDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'name'
-    queryset = Plugin.objects.filter(delete=False)
+    queryset = Plugin.objects.filter(has_deleted=False)
     serializer_class = PluginSerializer
 
     def get_serializer_class(self):
