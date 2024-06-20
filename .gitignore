@@ -118,7 +118,7 @@ nginx.conf
 
 
 
-# Ignore all files and folders in nxtbn/plugins/sources/
+# Ignore all files and folders in nxtbn/plugins/sources/ 
 nxtbn/plugins/sources/*
 
 # Do not ignore directories or files that start with 'nxt'
