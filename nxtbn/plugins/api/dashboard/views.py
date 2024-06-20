@@ -29,7 +29,7 @@ from nxtbn.plugins.models import fixed_dirs
 
 
 from nxtbn.plugins import PluginType
-from nxtbn.plugins.api.dashboard.serializers import PluginInstallSerializer, PluginInstallWithZIPURLSerializer, PluginSerializer, PluginUpdateSerializer, ZipFileUploadSerializer
+from nxtbn.plugins.api.dashboard.serializers import  PluginInstallWithZIPURLSerializer, PluginSerializer, PluginUpdateSerializer, ZipFileUploadSerializer
 from nxtbn.plugins.manager import PluginPathManager
 from nxtbn.plugins.models import Plugin
 
@@ -47,55 +47,25 @@ def get_module_path(module_name):
     raise ImportError(f"Module {module_name} not found")
 
 
-class PlugginsInstallViaGitView(generics.CreateAPIView):
-    serializer_class = PluginInstallSerializer
-
-    def perform_create(self, serializer):
-        git_url = serializer.validated_data['git_url']
-        plugin_type = serializer.validated_data['plugin_type']
-        
-        # Determine the target directory based on the plugin type
-        target_dir_base = get_module_path(PLUGIN_BASE_DIR)
-        
-        # Clone the repository
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            clone_dir = os.path.join(tmpdirname, 'repo')
-            subprocess.run(['git', 'clone', git_url, clone_dir], check=True)
-
-            # Remove the .git directory
-            git_dir = os.path.join(clone_dir, '.git')
-            if os.path.exists(git_dir):
-                shutil.rmtree(git_dir)
-            
-            # Move the cloned directory to the target directory
-            plugin_name = fixed_dirs.get(plugin_type, os.path.basename(git_url).rsplit('.', 1)[0])
-            target_dir = os.path.join(target_dir_base, plugin_name)
-            if os.path.exists(target_dir):
-                shutil.rmtree(target_dir)
-            shutil.move(clone_dir, target_dir)
-
-            # Install requirements if requirements.txt exists
-            requirements_path = os.path.join(target_dir, 'requirements.txt')
-            if os.path.exists(requirements_path):
-                subprocess.run(['pip', 'install', '-r', requirements_path], check=True)
-            
-            # Create or update the plugin record in the database
-            Plugin.objects.update_or_create(
-                name=plugin_name,
-                defaults={
-                    'description': '',
-                    'path': target_dir,
-                    'plugin_type': plugin_type,
-                    'is_active': False,
-                    'home_url': git_url,
-                    'documentation_url': git_url
-                }
-            )
-
-        return Response(
-            {'message': 'Plugin cloned, .git removed, and requirements installed successfully'},
-            status=status.HTTP_201_CREATED,
-        )
+def extract_metadata(file_path):
+    metadata = {}
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        inside_metadata = False
+        for line in lines:
+            if line.strip().startswith('metadata = {'):
+                inside_metadata = True
+            if inside_metadata:
+                try:
+                    key, value = line.split(':', 1)
+                    key = key.strip().strip('"').strip("'")
+                    value = value.strip().strip(',').strip('"').strip("'")
+                    metadata[key] = value
+                except ValueError:
+                    continue
+            if inside_metadata and line.strip().endswith('}'):
+                break
+    return metadata
 
 
 class PlugginsUploadView(APIView):
@@ -152,16 +122,11 @@ class PlugginsUploadView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-
-
-
-
 class PluginInstallViaZipUrlView(generics.CreateAPIView):
     serializer_class = PluginInstallWithZIPURLSerializer
 
     def perform_create(self, serializer):
         zip_url = serializer.validated_data['zip_url']
-        plugin_type = serializer.validated_data['plugin_type']
         
         # Download the ZIP file
         response = requests.get(zip_url, stream=True)
@@ -190,7 +155,20 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
                 raise ValidationError({'zip_url': 'Unexpected directory structure in the ZIP file.'})
 
             source_dir = os.path.join(tmpdirname, extracted_dirs[0])
-            target_dir = os.path.join(get_module_path(PLUGIN_BASE_DIR), extracted_dirs[0])
+
+            # Load metadata from __init__.py
+            init_file_path = os.path.join(source_dir, '__init__.py')
+            if not os.path.exists(init_file_path):
+                raise ValidationError({'zip_url': '__init__.py file not found in the plugin directory.'})
+            
+            plugin_metadata = extract_metadata(init_file_path)
+            plugin_name = plugin_metadata.get('plugin_name')
+            plugin_type = plugin_metadata.get('plugin_type')
+
+            if not plugin_name or not plugin_type:
+                raise ValidationError({'zip_url': 'Plugin name or type not found in metadata.'})
+
+            target_dir = os.path.join(get_module_path(PLUGIN_BASE_DIR), plugin_name)
 
             # Move the extracted files to the target directory
             if os.path.exists(target_dir):
@@ -204,13 +182,13 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
             
             # Create or update the plugin record in the database
             Plugin.objects.update_or_create(
-                name=extracted_dirs[0],
+                name=plugin_name,
                 defaults={
-                    'description': '',
+                    'description': plugin_metadata.get('description', ''),
                     'path': target_dir,
                     'plugin_type': plugin_type,
                     'is_active': True,
-                    'home_url': zip_url,
+                    'home_url': plugin_metadata.get('plugin_uri', ''),
                     'documentation_url': zip_url
                 }
             )
@@ -219,8 +197,6 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
             {'message': 'Plugin downloaded, extracted, and registered successfully'},
             status=status.HTTP_201_CREATED,
         )
-    
-
 class PluginDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'name'
     queryset = Plugin.objects.filter(has_deleted=False)
