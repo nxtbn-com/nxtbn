@@ -11,7 +11,7 @@ from nxtbn.plugins.models import Plugin
 
 class ZipFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
-    plugin_type = serializers.ChoiceField(choices=PluginType.choices)
+    # plugin_type = serializers.ChoiceField(choices=PluginType.choices)
     
     def validate_file(self, value):
         valid_extensions = ['.zip',]
