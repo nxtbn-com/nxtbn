@@ -23,7 +23,6 @@ from django.core.files.storage import FileSystemStorage
 from rest_framework.parsers import MultiPartParser
 from rest_framework.parsers import JSONParser
 
-from rest_framework import serializers
 
 from nxtbn.plugins.models import fixed_dirs
 
@@ -68,59 +67,77 @@ def extract_metadata(file_path):
     return metadata
 
 
-class PlugginsUploadView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = ZipFileUploadSerializer(data=request.data)
 
-        if serializer.is_valid():
-            uploaded_file = serializer.validated_data['file']
-            plugin_type = serializer.validated_data['plugin_type']
+class PluginsUploadView(generics.CreateAPIView):
+    serializer_class = ZipFileUploadSerializer
 
-            # Ensure the plugin_type is valid
-            if plugin_type not in PluginType.values:
-                raise ValidationError({'plugin_type': 'Invalid plugin type.'})
+    def perform_create(self, serializer):
+        uploaded_file = serializer.validated_data['file']
 
-            # Save the uploaded file temporarily
-            with tempfile.TemporaryDirectory() as tmpdirname:
-                temp_zip_path = os.path.join(tmpdirname, uploaded_file.name)
-                with open(temp_zip_path, 'wb') as temp_zip_file:
-                    for chunk in uploaded_file.chunks():
-                        temp_zip_file.write(chunk)
+        # Save the uploaded file temporarily
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            temp_zip_path = os.path.join(tmpdirname, uploaded_file.name)
+            with open(temp_zip_path, 'wb') as temp_zip_file:
+                for chunk in uploaded_file.chunks():
+                    temp_zip_file.write(chunk)
 
-                # Extract the ZIP file
-                with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
-                    zip_ref.extractall(tmpdirname)
+            # Extract the ZIP file
+            with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+                zip_ref.extractall(tmpdirname)
 
-                # Determine the plugin name and target directory
-                plugin_name = fixed_dirs.get(plugin_type, os.path.splitext(uploaded_file.name)[0])
-                source_dir = os.path.join(tmpdirname, plugin_name)
-                target_dir = os.path.join(PLUGIN_BASE_DIR, plugin_name)
+            # Log the contents of the temporary directory
+            logger.debug(f"Contents of temporary directory {tmpdirname}: {os.listdir(tmpdirname)}")
 
-                # Move the extracted files to the target directory
-                if os.path.exists(target_dir):
-                    shutil.rmtree(target_dir)
-                shutil.move(source_dir, target_dir)
+            # Determine the correct source directory dynamically
+            extracted_dirs = [d for d in os.listdir(tmpdirname) if os.path.isdir(os.path.join(tmpdirname, d))]
+            logger.debug(f"Extracted directories: {extracted_dirs}")
 
-                # Create or update the plugin record in the database
-                Plugin.objects.update_or_create(
-                    name=plugin_name,
-                    defaults={
-                        'description': '',
-                        'path': target_dir,
-                        'plugin_type': plugin_type,
-                        'is_active': False,
-                        'home_url': '',
-                        'documentation_url': ''
-                    }
-                )
+            if len(extracted_dirs) != 1:
+                raise ValidationError({'file': 'Unexpected directory structure in the ZIP file.'})
 
-            return Response(
-                {'message': 'ZIP file uploaded, extracted, and plugin registered successfully'},
-                status=status.HTTP_201_CREATED,
+            source_dir = os.path.join(tmpdirname, extracted_dirs[0])
+
+            # Load metadata from __init__.py
+            init_file_path = os.path.join(source_dir, '__init__.py')
+            if not os.path.exists(init_file_path):
+                raise ValidationError({'file': '__init__.py file not found in the plugin directory.'})
+            
+            plugin_metadata = extract_metadata(init_file_path)
+            plugin_name = plugin_metadata.get('plugin_name')
+            plugin_type = plugin_metadata.get('plugin_type')
+
+            if not plugin_name or not plugin_type:
+                raise ValidationError({'file': 'Plugin name or type not found in metadata.'})
+
+            target_dir = os.path.join(get_module_path(PLUGIN_BASE_DIR), plugin_name)
+
+            # Move the extracted files to the target directory
+            if os.path.exists(target_dir):
+                shutil.rmtree(target_dir)
+            shutil.move(source_dir, target_dir)
+
+            # Install requirements if requirements.txt exists
+            requirements_path = os.path.join(target_dir, 'requirements.txt')
+            if os.path.exists(requirements_path):
+                subprocess.run(['pip', 'install', '-r', requirements_path], check=True)
+
+            # Create or update the plugin record in the database
+            Plugin.objects.update_or_create(
+                name=plugin_name,
+                defaults={
+                    'description': plugin_metadata.get('description', ''),
+                    'path': target_dir,
+                    'plugin_type': plugin_type,
+                    'is_active': False,
+                    'home_url': plugin_metadata.get('plugin_uri', ''),
+                    'documentation_url': ''
+                }
             )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+        return Response(
+            {'message': 'ZIP file uploaded, extracted, and plugin registered successfully'},
+            status=status.HTTP_201_CREATED,
+        )
 
 class PluginInstallViaZipUrlView(generics.CreateAPIView):
     serializer_class = PluginInstallWithZIPURLSerializer
@@ -187,7 +204,7 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
                     'description': plugin_metadata.get('description', ''),
                     'path': target_dir,
                     'plugin_type': plugin_type,
-                    'is_active': True,
+                    'is_active': False,
                     'home_url': plugin_metadata.get('plugin_uri', ''),
                     'documentation_url': zip_url
                 }
