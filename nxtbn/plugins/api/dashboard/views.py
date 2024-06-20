@@ -42,7 +42,10 @@ os.makedirs(PLUGIN_BASE_DIR, exist_ok=True)
 def get_module_path(module_name):
     spec = importlib.util.find_spec(module_name)
     if spec and spec.origin:
-        return os.path.dirname(spec.origin)
+        absolute_path = os.path.dirname(spec.origin)
+        # Calculate the relative path from BASE_DIR
+        relative_path = os.path.relpath(absolute_path, start=settings.BASE_DIR)
+        return relative_path
     raise ImportError(f"Module {module_name} not found")
 
 
@@ -65,8 +68,6 @@ def extract_metadata(file_path):
             if inside_metadata and line.strip().endswith('}'):
                 break
     return metadata
-
-
 
 class PluginsUploadView(generics.CreateAPIView):
     serializer_class = ZipFileUploadSerializer
@@ -116,17 +117,19 @@ class PluginsUploadView(generics.CreateAPIView):
                 shutil.rmtree(target_dir)
             shutil.move(source_dir, target_dir)
 
+            logger.debug(f"Target directory: {target_dir}")
+
             # Install requirements if requirements.txt exists
             requirements_path = os.path.join(target_dir, 'requirements.txt')
             if os.path.exists(requirements_path):
                 subprocess.run(['pip', 'install', '-r', requirements_path], check=True)
 
             # Create or update the plugin record in the database
-            Plugin.objects.update_or_create(
+            plugin, created = Plugin.objects.update_or_create(
                 name=plugin_name,
                 defaults={
                     'description': plugin_metadata.get('description', ''),
-                    'path': target_dir,
+                    'path': target_dir,  # Ensure path is correctly set
                     'plugin_type': plugin_type,
                     'is_active': False,
                     'home_url': plugin_metadata.get('plugin_uri', ''),
@@ -134,10 +137,13 @@ class PluginsUploadView(generics.CreateAPIView):
                 }
             )
 
+            logger.debug(f"Plugin saved: {plugin}")
+
         return Response(
             {'message': 'ZIP file uploaded, extracted, and plugin registered successfully'},
             status=status.HTTP_201_CREATED,
         )
+
 
 class PluginInstallViaZipUrlView(generics.CreateAPIView):
     serializer_class = PluginInstallWithZIPURLSerializer
