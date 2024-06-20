@@ -23,6 +23,9 @@ from django.core.files.storage import FileSystemStorage
 from rest_framework.parsers import MultiPartParser
 from rest_framework.parsers import JSONParser
 
+from packaging.version import parse as parse_version
+from packaging.specifiers import SpecifierSet
+
 
 from nxtbn.plugins.models import fixed_dirs
 
@@ -69,6 +72,7 @@ def extract_metadata(file_path):
                 break
     return metadata
 
+
 class PluginsUploadView(generics.CreateAPIView):
     serializer_class = ZipFileUploadSerializer
 
@@ -106,9 +110,18 @@ class PluginsUploadView(generics.CreateAPIView):
             plugin_metadata = extract_metadata(init_file_path)
             plugin_name = plugin_metadata.get('plugin_name')
             plugin_type = plugin_metadata.get('plugin_type')
+            nxtbn_version_compatibility = plugin_metadata.get('nxtbn_version_compatibility')
 
             if not plugin_name or not plugin_type:
                 raise ValidationError({'file': 'Plugin name or type not found in metadata.'})
+
+            # Check version compatibility
+            if nxtbn_version_compatibility:
+                current_version = parse_version(settings.VERSION)
+                specifier = SpecifierSet(nxtbn_version_compatibility)
+                if not current_version in specifier:
+                    shutil.rmtree(source_dir)
+                    raise ValidationError({'file': f'Plugin version {nxtbn_version_compatibility} is not compatible with the current version {settings.VERSION}.'})
 
             target_dir = os.path.join(get_module_path(PLUGIN_BASE_DIR), plugin_name)
 
@@ -118,6 +131,9 @@ class PluginsUploadView(generics.CreateAPIView):
             shutil.move(source_dir, target_dir)
 
             logger.debug(f"Target directory: {target_dir}")
+
+            # Calculate the relative path
+            relative_path = os.path.relpath(target_dir, start=settings.BASE_DIR)
 
             # Install requirements if requirements.txt exists
             requirements_path = os.path.join(target_dir, 'requirements.txt')
@@ -129,7 +145,7 @@ class PluginsUploadView(generics.CreateAPIView):
                 name=plugin_name,
                 defaults={
                     'description': plugin_metadata.get('description', ''),
-                    'path': target_dir,  # Ensure path is correctly set
+                    'path': relative_path,  # Save the relative path
                     'plugin_type': plugin_type,
                     'is_active': False,
                     'home_url': plugin_metadata.get('plugin_uri', ''),
@@ -187,9 +203,18 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
             plugin_metadata = extract_metadata(init_file_path)
             plugin_name = plugin_metadata.get('plugin_name')
             plugin_type = plugin_metadata.get('plugin_type')
+            nxtbn_version_compatibility = plugin_metadata.get('nxtbn_version_compatibility')
 
             if not plugin_name or not plugin_type:
                 raise ValidationError({'zip_url': 'Plugin name or type not found in metadata.'})
+
+            # Check version compatibility
+            if nxtbn_version_compatibility:
+                current_version = parse_version(settings.VERSION)
+                specifier = SpecifierSet(nxtbn_version_compatibility)
+                if not current_version in specifier:
+                    shutil.rmtree(source_dir)
+                    raise ValidationError({'zip_url': f'Plugin version {nxtbn_version_compatibility} is not compatible with the current version {settings.VERSION}.'})
 
             target_dir = os.path.join(get_module_path(PLUGIN_BASE_DIR), plugin_name)
 
@@ -197,6 +222,11 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
             if os.path.exists(target_dir):
                 shutil.rmtree(target_dir)
             shutil.move(source_dir, target_dir)
+
+            logger.debug(f"Target directory: {target_dir}")
+
+            # Calculate the relative path
+            relative_path = os.path.relpath(target_dir, start=settings.BASE_DIR)
 
             # Install requirements if requirements.txt exists
             requirements_path = os.path.join(target_dir, 'requirements.txt')
@@ -208,7 +238,7 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
                 name=plugin_name,
                 defaults={
                     'description': plugin_metadata.get('description', ''),
-                    'path': target_dir,
+                    'path': relative_path,  # Save the relative path
                     'plugin_type': plugin_type,
                     'is_active': False,
                     'home_url': plugin_metadata.get('plugin_uri', ''),
