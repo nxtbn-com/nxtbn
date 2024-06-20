@@ -3,6 +3,7 @@ import os
 import zipfile
 import shutil
 import subprocess
+import logging
 
 from django.conf import settings
 import tempfile
@@ -31,6 +32,9 @@ from nxtbn.plugins import PluginType
 from nxtbn.plugins.api.dashboard.serializers import PluginInstallSerializer, PluginInstallWithZIPURLSerializer, PluginSerializer, PluginUpdateSerializer, ZipFileUploadSerializer
 from nxtbn.plugins.manager import PluginPathManager
 from nxtbn.plugins.models import Plugin
+
+logger = logging.getLogger(__name__)
+
 
 PLUGIN_BASE_DIR = getattr(settings, 'PLUGIN_BASE_DIR')
 
@@ -151,6 +155,7 @@ class PlugginsUploadView(APIView):
 
 
 
+
 class PluginInstallViaZipUrlView(generics.CreateAPIView):
     serializer_class = PluginInstallWithZIPURLSerializer
 
@@ -174,10 +179,18 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
             with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
                 zip_ref.extractall(tmpdirname)
 
-            # Determine the plugin name and target directory
-            plugin_name = fixed_dirs.get(plugin_type, os.path.basename(zip_url).rsplit('.', 1)[0])
-            source_dir = os.path.join(tmpdirname, plugin_name)
-            target_dir = os.path.join(get_module_path(PLUGIN_BASE_DIR), plugin_name)
+            # Log the contents of the temporary directory
+            logger.debug(f"Contents of temporary directory {tmpdirname}: {os.listdir(tmpdirname)}")
+
+            # Determine the correct source directory dynamically
+            extracted_dirs = [d for d in os.listdir(tmpdirname) if os.path.isdir(os.path.join(tmpdirname, d))]
+            logger.debug(f"Extracted directories: {extracted_dirs}")
+
+            if len(extracted_dirs) != 1:
+                raise ValidationError({'zip_url': 'Unexpected directory structure in the ZIP file.'})
+
+            source_dir = os.path.join(tmpdirname, extracted_dirs[0])
+            target_dir = os.path.join(get_module_path(PLUGIN_BASE_DIR), extracted_dirs[0])
 
             # Move the extracted files to the target directory
             if os.path.exists(target_dir):
@@ -191,7 +204,7 @@ class PluginInstallViaZipUrlView(generics.CreateAPIView):
             
             # Create or update the plugin record in the database
             Plugin.objects.update_or_create(
-                name=plugin_name,
+                name=extracted_dirs[0],
                 defaults={
                     'description': '',
                     'path': target_dir,
