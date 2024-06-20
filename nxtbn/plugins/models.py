@@ -43,6 +43,7 @@ class Plugin(AbstractBaseModel):
     has_deleted = models.BooleanField(default=False)
     home_url = models.URLField(null=True, blank=True)
     documentation_url = models.URLField(null=True, blank=True)
+    tag = models.CharField(max_length=255, null=True, blank=True) # version tag
 
     class Meta:
         unique_together = ('name', 'plugin_type')

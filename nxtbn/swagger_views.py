@@ -21,6 +21,7 @@ DASHBOARD_PATTERNS = [
         path('product/dashboard/api/', include('nxtbn.product.api.dashboard.urls')),
         path('payment/dashboard/api/', include('nxtbn.payment.api.dashboard.urls')),
         path('seo/dashboard/api/', include('nxtbn.seo.api.dashboard.urls')),
+        path('plugins/dashboard/api/', include('nxtbn.plugins.api.dashboard.urls')),
 ]
 
 STOREFRONT_PATTERNS = [
