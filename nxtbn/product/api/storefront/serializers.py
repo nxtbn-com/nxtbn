@@ -18,9 +18,7 @@ class CollectionSerializer(serializers.ModelSerializer):
         model = Collection
         fields = ('id', 'name', 'description', 'is_active', 'image',)
 
-from nxtbn.core.currency.backend import currency_Backend
-from rest_framework import serializers
-from nxtbn.product.models import Product,  ProductVariant
+
 class ProductVariantSerializer(serializers.ModelSerializer):
     variant_image = ImageSerializer(many=True, read_only=True)
     price_in_target_currency = serializers.SerializerMethodField()
