@@ -26,6 +26,7 @@ py-money = "*"
 django-celery-beat = "*"
 redis = "*"
 django-countries = "*"
+pymemcache = "*"
 
 [dev-packages]
 coverage = "*"

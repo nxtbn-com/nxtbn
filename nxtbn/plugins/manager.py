@@ -1,4 +1,5 @@
-from django.core.cache import cache
+from django.conf import settings
+from django.core.cache import caches
 from nxtbn.plugins.models import Plugin
 import shutil
 import os
@@ -10,6 +11,7 @@ class PluginPathManager:
         self.plugin_name = plugin_name
         self.plugin_type = plugin_type
         self.cache_key = f"{plugin_type}_plugin_path_{plugin_name}"
+        self.cache_backend = 'generic'
 
     def get_plugin(self):
         """Fetch the plugin object from the database."""
@@ -20,6 +22,7 @@ class PluginPathManager:
 
     def get_plugin_path(self):
         """Get the full path to the directory for the given plugin."""
+        cache = caches[self.cache_backend]
         path = cache.get(self.cache_key)
         if not path:
             plugin = self.get_plugin()
@@ -38,6 +41,7 @@ class PluginPathManager:
     def cache_plugin_path(self, plugin):
         """Cache the plugin path."""
         if plugin.is_active:
+            cache = caches[self.cache_backend]
             path = plugin.to_dotted_path()
             cache.set(self.cache_key, path, timeout=self.DEFAULT_CACHE_TIMEOUT)
         else:
@@ -50,6 +54,7 @@ class PluginPathManager:
 
     def remove_plugin_from_cache(self, plugin):
         """Remove the plugin path from cache."""
+        cache = caches[self.cache_backend]
         cache.delete(self.cache_key)
 
     @classmethod
@@ -70,7 +75,8 @@ class PluginPathManager:
 
     def remove_plugins(self):
         """Remove the plugin directory and its path from cache."""
-        path = self.get_plugin_path()
+        cache = caches[self.cache_backend]
+        path = cache.get(self.cache_key)
         if path and os.path.isdir(path):
             shutil.rmtree(path)  # Remove the directory and all its contents
 
