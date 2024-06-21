@@ -91,8 +91,14 @@ class PluginBaseMixin:
             raise ValidationError({'file': '__init__.py file not found in the plugin directory.'})
 
         plugin_metadata = extract_metadata(init_file_path)
-        plugin_name = plugin_metadata.get('plugin_name')
+
+        
         plugin_type = plugin_metadata.get('plugin_type')
+        if fixed_dirs.get(plugin_type, ''):
+            plugin_name = fixed_dirs.get(plugin_type)
+        else:
+            plugin_name = plugin_metadata.get('plugin_name')
+        
         nxtbn_version_compatibility = plugin_metadata.get('nxtbn_version_compatibility')
 
         if not plugin_name or not plugin_type:
