@@ -9,7 +9,8 @@ from babel.numbers import format_currency
 class CurrencyBackend(ABC):
     def __init__(self):
         self.base_currency = settings.BASE_CURRENCY
-        self.cache_key = f"exchange_rates_{self.base_currency}"
+        self.cache_key_prefix = f"exchange_rate_{self.base_currency}_to"
+        self.timeout = 604800 # Cache for 1 week
         self.cache_backend = 'generic'
 
     @abstractmethod
@@ -23,9 +24,7 @@ class CurrencyBackend(ABC):
         pass
 
     def refresh_rate(self):
-        data = self.fetch_data()
         cache = caches[self.cache_backend]
-        cache.set(self.cache_key, data, timeout=604800)  # Cache for 1 week
 
         for fetch_data in self.fetch_data():
             CurrencyExchange.objects.update_or_create(
@@ -33,14 +32,16 @@ class CurrencyBackend(ABC):
                 target_currency=fetch_data['target_currency'],
                 defaults={'exchange_rate': fetch_data['exchange_rate']}
             )
+            key = f"{self.cache_key_prefix}_{fetch_data['target_currency']}"
+            cache.set(key, fetch_data['exchange_rate'], timeout=self.timeout)
+
 
     def get_exchange_rate(self, target_currency: str) -> float:
         cache = caches[self.cache_backend]
-        cached_data = cache.get(self.cache_key)
-        if cached_data:
-            for rate_data in cached_data:
-                if rate_data['target_currency'] == target_currency:
-                    return rate_data['exchange_rate']
+        key = f"{self.cache_key_prefix}_{target_currency}"
+        rate = cache.get(key)
+        if rate:
+            return rate
         
         # Fallback to database if not found in cache
         exchange_rate = CurrencyExchange.objects.filter(
@@ -53,6 +54,8 @@ class CurrencyBackend(ABC):
                 base_currency=settings.BASE_CURRENCY,
                 target_currency=target_currency
             ).exchange_rate
+            key = f"{self.cache_key_prefix}_{target_currency}"
+            cache.set(key, exchange_rate, timeout=self.timeout)
             return exchange_rate
         except CurrencyExchange.DoesNotExist:
             raise ValueError(f"Exchange rate for {target_currency} not found.")
