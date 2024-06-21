@@ -356,7 +356,7 @@ CELERY_TIMEZONE = TIME_ZONE
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": REDIS_URL,
+        "LOCATION": "unix:/tmp/memcached.sock",
     },
     "generic": {
         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
