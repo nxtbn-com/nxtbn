@@ -1,5 +1,5 @@
 try:
-    from nxtbn.plugins.sources import currency_Backend
+    from nxtbn.plugins.sources.currency_Backend import plugin as currency_Backend
 except ImportError:
     from nxtbn.core.currency.abstract_base_currency import CurrencyBackend as currency_Backend
 

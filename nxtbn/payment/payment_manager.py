@@ -26,7 +26,7 @@ class PaymentManager:
     def select_gateway(self, payment_plugin_id: str, context: dict = {}, order: Optional[Order] = None):
         """Select the appropriate gateway based on the payment method."""
 
-        gateway_path = PluginPathManager.get_plugin_path(payment_plugin_id, PluginType.PAYMENT_PROCESSOR) + '.gateway'              
+        gateway_path = PluginPathManager.get_plugin_path(payment_plugin_id, PluginType.PAYMENT_PROCESSOR) + '.plugin'              
 
         module_name, class_name = gateway_path.rsplit(".", 1)
         module = import_module(module_name)
