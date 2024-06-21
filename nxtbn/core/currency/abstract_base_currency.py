@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List
 from django.conf import settings
 from nxtbn.core.models import CurrencyExchange
-from django.core.cache import cache
+from django.core.cache import caches
 from babel.numbers import format_currency
 
 
@@ -10,6 +10,7 @@ class CurrencyBackend(ABC):
     def __init__(self):
         self.base_currency = settings.BASE_CURRENCY
         self.cache_key = f"exchange_rates_{self.base_currency}"
+        self.cache_backend = 'generic'
 
     @abstractmethod
     def fetch_data(self) -> List[Dict[str, float]]:
@@ -23,6 +24,7 @@ class CurrencyBackend(ABC):
 
     def refresh_rate(self):
         data = self.fetch_data()
+        cache = caches[self.cache_backend]
         cache.set(self.cache_key, data, timeout=604800)  # Cache for 1 week
 
         for fetch_data in self.fetch_data():
@@ -33,6 +35,7 @@ class CurrencyBackend(ABC):
             )
 
     def get_exchange_rate(self, target_currency: str) -> float:
+        cache = caches[self.cache_backend]
         cached_data = cache.get(self.cache_key)
         if cached_data:
             for rate_data in cached_data:

@@ -11,7 +11,7 @@ class PluginPathManager:
         self.plugin_name = plugin_name
         self.plugin_type = plugin_type
         self.cache_key = f"{plugin_type}_plugin_path_{plugin_name}"
-        self.cache_backend = 'memcached_for_plugins'  # Use Memcached for plugins
+        self.cache_backend = 'generic'
 
     def get_plugin(self):
         """Fetch the plugin object from the database."""
