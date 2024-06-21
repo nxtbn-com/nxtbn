@@ -343,13 +343,26 @@ SWAGGER_SETTINGS = { # "Token <YOUR TOKEN>""
 }
 
 
+REDIS_URL = get_env_var("REDIS_URL", "redis://redis:6379/1")
 
-CELERY_BROKER_URL = get_env_var("REDIS_URL", "redis://redis:6379/1")
-CELERY_RESULT_BACKEND = get_env_var("REDIS_URL", "redis://redis:6379/1") 
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": REDIS_URL,
+    },
+    "generic": {
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "LOCATION": "unix:/tmp/memcached.sock",
+    }
+}
 
 # ============================
 # NXTBN Specific Configuration
