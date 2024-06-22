@@ -119,7 +119,10 @@ class TokenRefreshView(generics.GenericAPIView):
 
         if user:
             access_token = self.jwt_manager.generate_access_token(user)
-            new_refresh_token = self.jwt_manager.generate_refresh_token(user)
+            # The refresh token generation is currently omitted to avoid additional overhead 
+            # since we have not implemented a token blacklist mechanism yet. 
+            # This feature may be added in the future based on business requirements.
+            # new_refresh_token = self.jwt_manager.generate_refresh_token(user)
 
             user_data = JwtBasicUserSerializer(user).data
             return Response(
@@ -127,7 +130,7 @@ class TokenRefreshView(generics.GenericAPIView):
                     "user": user_data,
                     "token": {
                         "access": access_token,
-                        "refresh": new_refresh_token,
+                        # "refresh": new_refresh_token,
                     },
                 },
                 status=status.HTTP_200_OK,
