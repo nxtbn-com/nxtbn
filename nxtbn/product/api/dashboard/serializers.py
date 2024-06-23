@@ -12,15 +12,15 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class RecursiveCategorySerializer(serializers.ModelSerializer):
-    subcategories = serializers.SerializerMethodField()
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'description', 'subcategories')
+        fields = ('id', 'name', 'description', 'children')
 
-    def get_subcategories(self, obj):
-        subcategories = obj.subcategories.all()
-        return RecursiveCategorySerializer(subcategories, many=True).data
+    def get_children(self, obj):
+        children = obj.subcategories.all()
+        return RecursiveCategorySerializer(children, many=True).data
 
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
