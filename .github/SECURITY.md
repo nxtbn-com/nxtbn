@@ -44,7 +44,7 @@ For more information on securing your nxtbn deployment, refer to the following r
 - [Django Security Practices](https://docs.djangoproject.com/en/stable/topics/security/)
 - [OWASP Security Guidelines](https://owasp.org/)
 
-If you have any security-related questions or concerns, please contact us at [security@bytenyx.com](mailto:security@bytenyx.com).
+If you have any security-related questions or concerns, please contact us at [security@nxtbn.com](mailto:security@nxtbn.com).
 
 ---
 

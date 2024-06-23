@@ -61,6 +61,6 @@ By contributing to nxtbn, you agree to the following:
 Bytenyx Limited reserves the right to change, modify, update, or terminate any terms and conditions or policies related to this project at any time. You will be notified of significant changes, and by continuing to contribute, you agree to abide by the updated terms.
 
 ## Need Help?
-If you have questions or need support, please create an issue in the repository or contact us at [support@bytenyx.com](mailto:support@bytenyx.com).
+If you have questions or need support, please create an issue in the repository or contact us at [support@nxtbn.com](mailto:support@nxtbn.com).
 
 Thank you for contributing to nxtbn!

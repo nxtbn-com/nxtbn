@@ -25,14 +25,14 @@ Unacceptable behaviors include:
 - Any other conduct that could be reasonably considered inappropriate in a professional setting.
 
 ## 📢 Reporting and Enforcement
-If you experience or witness behavior that violates this Code of Conduct, please report it to our Code of Conduct team at [conduct@bytenyx.com](mailto:conduct@bytenyx.com). All reports will be handled confidentially and promptly.
+If you experience or witness behavior that violates this Code of Conduct, please report it to our Code of Conduct team at [conduct@nxtbn.com](mailto:conduct@nxtbn.com). All reports will be handled confidentially and promptly.
 
 We are committed to addressing any behavior that violates this Code of Conduct. The enforcement process includes:
 - Investigation of the report.
 - Appropriate corrective actions, which may include warnings, temporary bans, or permanent removal from the community.
 
 ## 🙏 Acknowledgements
-We thank all participants for their help in creating a positive and inclusive community. We are inspired by the [Contributor Covenant](https://www.contributor-covenant.org/), version 2.1, which serves as a model for this Code of Conduct. If you have suggestions or feedback, please reach out to us at [conduct@bytenyx.com](mailto:conduct@bytenyx.com).
+We thank all participants for their help in creating a positive and inclusive community. We are inspired by the [Contributor Covenant](https://www.contributor-covenant.org/), version 2.1, which serves as a model for this Code of Conduct. If you have suggestions or feedback, please reach out to us at [conduct@nxtbn.com](mailto:conduct@nxtbn.com).
 
 ---
 

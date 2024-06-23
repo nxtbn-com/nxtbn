@@ -98,7 +98,7 @@ Nxtbn is designed to support a variety of e-commerce models. You can sell physic
 ### 3. Can I use my preferred frontend technology with nxtbn?
 Yes, nxtbn doesn't enforce a specific frontend technology. You can use Django templates, React, Vue, or any other framework you prefer. This flexibility allows you to choose the frontend that best suits your project.
 ### 6. How do I get support or report a security issue?
-For support or general feedback, please email us at [feedback@bytenyx.com](mailto:feedback@bytenyx.com). If you find a security issue, report it through our secure channel or email us at [security@bytenyx.com](mailto:security@bytenyx.com). Avoid posting security issues in public forums or GitHub issues.
+For support or general feedback, please email us at [feedback@nxtbn.com](mailto:feedback@nxtbn.com). If you find a security issue, report it through our secure channel or email us at [security@nxtbn.com](mailto:security@nxtbn.com). Avoid posting security issues in public forums or GitHub issues.
 
 
 ## 📄 License
@@ -106,7 +106,7 @@ nxtbn is licensed under the [BSD-3 License](https://github.com/nxtbn-com/nxtbn?t
 
 
 ## Commercial Support
-We offer commercial support to help with any missing functionality or project assistance. For inquiries, please reach out to us at [info@bytenyx.com](mailto:info@bytenyx.com).
+We offer commercial support to help with any missing functionality or project assistance. For inquiries, please reach out to us at [info@nxtbn.com](mailto:info@nxtbn.com).
 
 ### 💖 Sponsor
 
