@@ -130,7 +130,7 @@ class TokenRefreshView(generics.GenericAPIView):
                     "user": user_data,
                     "token": {
                         "access": access_token,
-                        # "refresh": new_refresh_token,
+                        "refresh": refresh_token,
                     },
                 },
                 status=status.HTTP_200_OK,
