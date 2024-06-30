@@ -55,3 +55,35 @@ class ProductSerializer(serializers.ModelSerializer):
             'collections',
             'variants',
         )
+
+
+class ProductCreateSerializer(serializers.ModelSerializer):
+    variants = ProductVariantSerializer(many=True, read_only=True)
+    class Meta:
+        model = Product
+        ref_name = 'product_dashboard_create'
+        fields =  (
+            'id',
+            'name',
+            'summary',
+            'description',
+            'media',
+            'category',
+            'vendor',
+            'brand',
+            'type',
+            'related_to',
+            'default_variant',
+            'variants',
+            'collections',
+        )
+
+    def create(self, validated_data):
+        collection = validated_data.pop('collections', [])
+        isinstance = Product.objects.create(
+            **validated_data,
+            **{'created_by': self.context['request'].user}
+        )
+
+        isinstance.collections.set(collection)
+        return isinstance
