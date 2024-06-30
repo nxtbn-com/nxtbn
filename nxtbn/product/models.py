@@ -13,8 +13,9 @@ from nxtbn.core.models import AbstractMetadata, AbstractSEOModel, PublishableMod
 from nxtbn.filemanager.models import Document, Image
 from nxtbn.product import ProductType, StockStatus, WeightUnits
 from nxtbn.users.admin import User
-from nxtbn.vendor.models import Vendor
 
+class Supplier(NameDescriptionAbstract, AbstractSEOModel):
+    pass
 
 class Category(NameDescriptionAbstract, AbstractSEOModel):
     parent = models.ForeignKey(
@@ -97,7 +98,7 @@ class Product(PublishableModel, AbstractSEOModel):
         on_delete=models.SET_NULL, 
         related_name='products'
     )
-    vendor = models.ForeignKey(Vendor, on_delete=models.PROTECT, related_name='+', null=True, blank=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name='+', null=True, blank=True)
     brand = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=25, default=ProductType.SIMPLE_PRODUCT, choices=ProductType.choices)
     related_to = models.ManyToManyField("self", blank=True)

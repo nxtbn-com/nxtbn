@@ -12,7 +12,7 @@ from django_filters import rest_framework as filters
 from nxtbn.core.paginator import NxtbnPagination
 from nxtbn.product.api.storefront.serializers import CategorySerializer, CollectionSerializer, ProductDetailSerializer, ProductSerializer
 from nxtbn.product.models import Category, Collection, Product
-from nxtbn.vendor.models import Vendor
+from nxtbn.product.models import Supplier
 
 
 class ProductFilter(filters.FilterSet):
@@ -20,7 +20,7 @@ class ProductFilter(filters.FilterSet):
     summary = filters.CharFilter(lookup_expr='icontains')
     description = filters.CharFilter(lookup_expr='icontains')
     category = filters.ModelChoiceFilter(field_name='category', queryset=Category.objects.all())
-    vendor = filters.ModelChoiceFilter(field_name='vendor', queryset=Vendor.objects.all())
+    supplier = filters.ModelChoiceFilter(field_name='supplier', queryset=Supplier.objects.all())
     brand = filters.CharFilter(lookup_expr='icontains')
     type = filters.CharFilter(field_name='type', lookup_expr='exact')
     related_to = filters.CharFilter(field_name='related_to__name', lookup_expr='icontains')
@@ -28,7 +28,7 @@ class ProductFilter(filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ('name', 'summary', 'description', 'category', 'vendor', 'brand', 'type', 'related_to', 'collection')
+        fields = ('name', 'summary', 'description', 'category', 'supplier', 'brand', 'type', 'related_to', 'collection')
 
 
     

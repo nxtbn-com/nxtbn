@@ -44,8 +44,8 @@ class ProductVariantInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductVariantInline]
-    list_display = ('id','name', "slug", 'category', 'vendor', 'type',)
-    list_filter = ('category', 'vendor', 'type',)
+    list_display = ('id','name', "slug", 'category', 'supplier', 'type',)
+    list_filter = ('category', 'supplier', 'type',)
     search_fields = ('name', 'summary', 'description')
     readonly_fields = ('last_modified_by',) 
 
