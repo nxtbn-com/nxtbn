@@ -6,7 +6,13 @@ from rest_framework.exceptions import APIException
 
 from nxtbn.core.paginator import NxtbnPagination
 from nxtbn.product.models import Product, Category, Collection
-from nxtbn.product.api.dashboard.serializers import ProductSerializer, CategorySerializer, CollectionSerializer, RecursiveCategorySerializer
+from nxtbn.product.api.dashboard.serializers import (
+    ProductCreateSerializer,
+    ProductSerializer,
+    CategorySerializer,
+    CollectionSerializer,
+    RecursiveCategorySerializer
+)
 from nxtbn.core.admin_permissions import NxtbnAdminPermission
 
 
@@ -16,6 +22,11 @@ class ProductListView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     pagination_class = NxtbnPagination
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return ProductCreateSerializer
+        return ProductSerializer
 
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
