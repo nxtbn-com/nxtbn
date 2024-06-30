@@ -55,3 +55,23 @@ class ProductSerializer(serializers.ModelSerializer):
             'collections',
             'variants',
         )
+
+
+class ProductCreateSerializer(serializers.ModelSerializer):
+    variants = ProductVariantSerializer(many=True, read_only=True)
+    class Meta:
+        model = Product
+        fields =  (
+            'id',
+            'name',
+            'summary',
+            'description',
+            'media',
+            'category',
+            'vendor',
+            'brand',
+            'type',
+            'related_to',
+            'default_variant',
+            'collections',
+        )
