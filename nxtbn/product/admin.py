@@ -1,5 +1,6 @@
+from django import forms
 from django.contrib import admin
-from nxtbn.product.models import Category,Collection,Product, ProductVariant
+from nxtbn.product.models import Category,Collection, Color,Product, ProductVariant
 
 # Register your models here.
 
@@ -53,3 +54,18 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(ProductVariant)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'currency', 'price', "currency")
+
+
+class ColorAdminForm(forms.ModelForm):
+    class Meta:
+        model = Color
+        fields = '__all__'
+        widgets = {
+            'code': forms.TextInput(attrs={'type': 'color'}),
+        }
+        
+@admin.register(Color)
+class ColorAdmin(admin.ModelAdmin):
+    form = ColorAdminForm
+    list_display = ('name', 'code')
+    search_fields = ('name', 'code')

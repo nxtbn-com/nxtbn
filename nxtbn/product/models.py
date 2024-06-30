@@ -17,6 +17,17 @@ from nxtbn.users.admin import User
 class Supplier(NameDescriptionAbstract, AbstractSEOModel):
     pass
 
+class Color(AbstractBaseModel):
+    code = models.CharField(max_length=7, unique=True)
+    name = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Color")
+        verbose_name_plural = _("Colors")
+
 class Category(NameDescriptionAbstract, AbstractSEOModel):
     parent = models.ForeignKey(
         'self',
@@ -161,7 +172,6 @@ class ProductVariant(MonetaryMixin, AbstractMetadata, models.Model):
     stock_status = models.CharField(default=StockStatus.IN_STOCK, choices=StockStatus.choices, max_length=15)
 
     color_code = models.CharField(max_length=7, null=True, blank=True)
-    color_name = models.CharField(max_length=50, null=True, blank=True)
 
     sku = models.CharField(max_length=50, unique=True)
     weight_unit = models.CharField(
