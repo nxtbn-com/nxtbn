@@ -2,7 +2,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from django.db import transaction
 
-from nxtbn.product.models import Product, Category, Collection, ProductVariant
+from nxtbn.product.models import Color, Product, Category, Collection, ProductVariant
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,7 +47,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'media',
             'category',
-            'vendor',
+            'supplier',
             'brand',
             'type',
             'related_to',
@@ -69,7 +69,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             'description',
             'media',
             'category',
-            'vendor',
+            'supplier',
             'brand',
             'type',
             'related_to',
@@ -87,3 +87,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
         isinstance.collections.set(collection)
         return isinstance
+    
+
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Color
+        fields = '__all__'

@@ -53,7 +53,7 @@ class Command(BaseCommand):
 
             order = Order.objects.create(
                 user=random_user, 
-                vendor=product.vendor,
+                supplier=product.supplier,
                 payment_method=random.choice(['Credit Card', 'PayPal', 'Cash on Delivery']),  
                 shipping_address=shipping_address,
                 billing_address=billing_address,

@@ -3,10 +3,13 @@ from rest_framework.response import Response
 from django.utils.translation import gettext_lazy as _
 from rest_framework.permissions  import AllowAny
 from rest_framework.exceptions import APIException
+from rest_framework import viewsets
+
 
 from nxtbn.core.paginator import NxtbnPagination
-from nxtbn.product.models import Product, Category, Collection
+from nxtbn.product.models import Color, Product, Category, Collection
 from nxtbn.product.api.dashboard.serializers import (
+    ColorSerializer,
     ProductCreateSerializer,
     ProductSerializer,
     CategorySerializer,
@@ -66,3 +69,13 @@ class CollectionDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CollectionSerializer
     permission_classes = (NxtbnAdminPermission,)
     lookup_field = 'id'
+
+
+class ColorViewSet(viewsets.ModelViewSet):
+    pagination_class = None
+    queryset = Color.objects.all()
+    serializer_class = ColorSerializer
+    allowed_methods = ['GET', 'POST', 'DELETE']
+
+    def get_queryset(self):
+        return Color.objects.all()

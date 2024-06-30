@@ -18,7 +18,7 @@ class OrderLineItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     line_items = OrderLineItemSerializer(many=True, read_only=True)
     user = serializers.StringRelatedField()
-    vendor = serializers.StringRelatedField(allow_null=True)
+    supplier = serializers.StringRelatedField(allow_null=True)
     shipping_address = serializers.StringRelatedField(allow_null=True)
     billing_address = serializers.StringRelatedField(allow_null=True)
     promo_code = serializers.StringRelatedField(allow_null=True)
@@ -29,7 +29,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'user',
-            'vendor',
+            'supplier',
             'payment_method',
             'shipping_address',
             'billing_address',

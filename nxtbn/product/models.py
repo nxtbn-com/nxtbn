@@ -13,8 +13,20 @@ from nxtbn.core.models import AbstractMetadata, AbstractSEOModel, PublishableMod
 from nxtbn.filemanager.models import Document, Image
 from nxtbn.product import ProductType, StockStatus, WeightUnits
 from nxtbn.users.admin import User
-from nxtbn.vendor.models import Vendor
 
+class Supplier(NameDescriptionAbstract, AbstractSEOModel):
+    pass
+
+class Color(AbstractBaseModel):
+    code = models.CharField(max_length=7, unique=True)
+    name = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Color")
+        verbose_name_plural = _("Colors")
 
 class Category(NameDescriptionAbstract, AbstractSEOModel):
     parent = models.ForeignKey(
@@ -97,7 +109,7 @@ class Product(PublishableModel, AbstractSEOModel):
         on_delete=models.SET_NULL, 
         related_name='products'
     )
-    vendor = models.ForeignKey(Vendor, on_delete=models.PROTECT, related_name='+', null=True, blank=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name='+', null=True, blank=True)
     brand = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=25, default=ProductType.SIMPLE_PRODUCT, choices=ProductType.choices)
     related_to = models.ManyToManyField("self", blank=True)
@@ -160,7 +172,6 @@ class ProductVariant(MonetaryMixin, AbstractMetadata, models.Model):
     stock_status = models.CharField(default=StockStatus.IN_STOCK, choices=StockStatus.choices, max_length=15)
 
     color_code = models.CharField(max_length=7, null=True, blank=True)
-    color_name = models.CharField(max_length=50, null=True, blank=True)
 
     sku = models.CharField(max_length=50, unique=True)
     weight_unit = models.CharField(

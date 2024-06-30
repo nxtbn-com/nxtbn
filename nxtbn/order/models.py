@@ -14,7 +14,7 @@ from nxtbn.order import OrderAuthorizationStatus, OrderChargeStatus, OrderStatus
 from nxtbn.payment import PaymentMethod
 from nxtbn.product.models import ProductVariant
 from nxtbn.users.admin import User
-from nxtbn.vendor.models import Vendor
+from nxtbn.product.models import Supplier
 
 from money.money import Currency, Money
 from babel.numbers import get_currency_precision, format_currency
@@ -78,7 +78,7 @@ class Order(MonetaryMixin, AbstractBaseUUIDModel):
 
 
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="orders", null=True, blank=True)
-    vendor = models.ForeignKey(Vendor, null=True, blank=True, on_delete=models.SET_NULL)
+    supplier = models.ForeignKey(Supplier, null=True, blank=True, on_delete=models.SET_NULL)
     payment_method = models.CharField(max_length=20, choices=PaymentMethod.choices)
     shipping_address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL, related_name="shipping_orders")
     billing_address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL, related_name="billing_orders")

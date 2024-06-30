@@ -65,9 +65,6 @@ urlpatterns = [
     path('invoice/storefront/api/', include('nxtbn.invoice.api.storefront.urls')),
     path('invoice/dashboard/api/', include('nxtbn.invoice.api.dashboard.urls')),
 
-    path('vendor/storefront/api/', include('nxtbn.vendor.api.storefront.urls')),
-    path('vendor/dashboard/api/', include('nxtbn.vendor.api.dashboard.urls')),
-
     path('filemanager/storefront/api/', include('nxtbn.filemanager.api.storefront.urls')),
     path('filemanager/dashboard/api/', include('nxtbn.filemanager.api.dashboard.urls')),
 
