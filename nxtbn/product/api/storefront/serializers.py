@@ -65,7 +65,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'type',
             'category',
             'collections',
-            'media',
+            'images',
             'created_by',
             'default_variant',
             'variants',
