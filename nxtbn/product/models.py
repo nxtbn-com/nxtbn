@@ -95,13 +95,13 @@ class Collection(NameDescriptionAbstract, AbstractSEOModel):
     def __str__(self):
         return self.name
 
-class Product(PublishableModel, AbstractSEOModel):
+class Product(PublishableModel, AbstractMetadata, AbstractSEOModel):
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='products_created')
     last_modified_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='products_modified', null=True, blank=True)
     name = models.CharField(max_length=255)
     summary = models.TextField(max_length=500)
     description = models.TextField(max_length=500)
-    media = models.ManyToManyField(Document, blank=True)
+    images = models.ManyToManyField(Image, blank=True)
     category = models.ForeignKey(
         'Category', 
         null=True, 
@@ -147,7 +147,7 @@ class ProductVariant(MonetaryMixin, AbstractMetadata, models.Model):
     }
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
-    variant_image = models.ManyToManyField(Image, blank=True)
+    variant_image = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=255, blank=True, null=True)
 
     compare_at_price = models.DecimalField(max_digits=12, decimal_places=3, validators=[MinValueValidator(Decimal('0.01'))])
