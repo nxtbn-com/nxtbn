@@ -13,6 +13,15 @@ from nxtbn.users.admin import User
 from money.money import Currency, Money
 from babel.numbers import get_currency_precision, format_currency
 
+
+def no_nested_values(value):
+    if isinstance(value, dict):
+        for k, v in value.items():
+            if isinstance(v, dict):
+                raise ValidationError(f"Nested values are not allowed: key '{k}' has a nested dictionary.")
+    else:
+        raise ValidationError("Value must be a dictionary.")
+
 #============================
 # Abstract Base Model Start
 # ==========================
@@ -100,6 +109,16 @@ class AbstractAddressModels(AbstractBaseModel):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}, {self.street_address}, {self.city}, {self.country}"
+    
+
+class AbstractMetadata(models.Model):
+    internal_metadata = models.JSONField( # Don't expose it publicly, to store some internal refference
+        blank=True, null=True, default=dict, validators=[no_nested_values]
+    )
+    metadata = models.JSONField(blank=True, null=True, default=dict, validators=[no_nested_values])
+
+    class Meta:
+        abstract = True
 
 
 #============================
