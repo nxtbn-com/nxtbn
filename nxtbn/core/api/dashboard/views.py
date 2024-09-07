@@ -23,3 +23,11 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.parsers import JSONParser
 
 from rest_framework import serializers
+
+from nxtbn.core.api.dashboard.serializers import SiteSettingSerializer
+from nxtbn.core.models import SiteSettings
+
+class SiteSettingView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = SiteSettingSerializer
+    queryset = SiteSettings
+    lookup_field = 'id'

@@ -76,12 +76,14 @@ class CollectionSerializer(serializers.ModelSerializer):
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     is_default_variant = serializers.SerializerMethodField()
+    product_name = serializers.SerializerMethodField()
     class Meta:
         model = ProductVariant
         ref_name = 'product_variant_dashboard_get'
         fields = (
             'id',
             'product',
+            'product_name',
             'name',
             'compare_at_price',
             'price',
@@ -99,6 +101,9 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         )
     def get_is_default_variant(self, obj):
         return obj.product.default_variant_id == obj.id
+    
+    def get_product_name(self, obj):
+        return obj.product.name  
 
 class ProductSerializer(serializers.ModelSerializer):
     default_variant = ProductVariantSerializer(read_only=True)

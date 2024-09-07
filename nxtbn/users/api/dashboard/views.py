@@ -73,6 +73,17 @@ class CustomerListAPIView(generics.ListAPIView):
         return User.objects.filter(role=UserRole.CUSTOMER)
 
 
+class CustomerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API View to retrieve customer details
+    """
+    serializer_class = CustomerSerializer
+    lookup_field = 'username'
+
+    def get_queryset(self):
+        return User.objects.filter(role=UserRole.CUSTOMER)
+    
+
 class UserListAPIView(generics.ListAPIView):
     """
     API view to retrieve the list of all users.
@@ -101,4 +112,5 @@ class PasswordChangeView(generics.UpdateAPIView):
             return Response('Password changed successfully', status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
