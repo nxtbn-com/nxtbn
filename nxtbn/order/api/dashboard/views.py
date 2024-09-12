@@ -36,6 +36,8 @@ class OrderFilter(filters.FilterSet):
     authorize_status = filters.ChoiceFilter(choices=OrderAuthorizationStatus.choices)
     currency = filters.CharFilter(field_name='currency', lookup_expr='iexact')
     payment_method = filters.ChoiceFilter(choices=PaymentMethod.choices)
+    start_date = filters.DateTimeFilter(field_name='created_at', lookup_expr='gte')
+    end_date = filters.DateTimeFilter(field_name='created_at', lookup_expr='lte')
 
     class Meta:
         model = Order
@@ -44,7 +46,9 @@ class OrderFilter(filters.FilterSet):
             'charge_status',
             'authorize_status',
             'currency',
-            'payment_method'
+            'payment_method',
+            'start_date',
+            'end_date'
         ]
 
 
