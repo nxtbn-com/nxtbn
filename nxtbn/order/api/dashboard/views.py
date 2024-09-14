@@ -62,7 +62,7 @@ class OrderListView(generics.ListAPIView):
         drf_filters.OrderingFilter
     ]
     filterset_class = OrderFilter
-    search_fields = ['order_number', 'user__username', 'supplier__name']
+    search_fields = ['id', 'user__username', 'supplier__name']
     ordering_fields = ['created_at']
 
 
