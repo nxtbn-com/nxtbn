@@ -31,7 +31,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('products/', ProductListView.as_view(), name='product-list'),
     path('products/<int:id>/', ProductDetailView.as_view(), name='product-detail'),
-    path('product-with-variants/<int:id>/', ProductWithVariantView.as_view(), name='product-with-variant'),
+    path('products-with-variants/', ProductWithVariantView.as_view(), name='product-with-variant'),
     path('variants/<int:pk>/', ProductVariantDeleteAPIView.as_view(), name='variant-delete'),
 
     path('categories/', CategoryListView.as_view(), name='category-list'),

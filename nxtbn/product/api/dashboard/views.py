@@ -48,11 +48,12 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductMutationSerializer
     lookup_field = 'id'
 
-class ProductWithVariantView(generics.RetrieveAPIView):
+class ProductWithVariantView(generics.ListAPIView):
     permission_classes = (NxtbnAdminPermission,)
     queryset = Product.objects.all()
     serializer_class = ProductWithVariantSerializer
-    lookup_field = 'id'
+    filter_backends = [SearchFilter]
+    search_fields = ['name']
 
 
 class CategoryListView(generics.ListCreateAPIView):
