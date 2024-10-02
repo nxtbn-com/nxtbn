@@ -17,14 +17,14 @@ class DashboardLoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'avatar', 'username', 'email', 'first_name', 'last_name', 'role']
+        fields = ['id', 'avatar', 'username', 'email', 'first_name', 'last_name', 'role', 'designation', 'phone_number']
 
 
 class CustomerSerializer(serializers.ModelSerializer):
     default_shipping_address = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'avatar', 'username', 'email', 'first_name', 'last_name', 'full_name', 'role', 'default_shipping_address']
+        fields = ['id', 'avatar', 'username', 'email', 'first_name', 'last_name', 'full_name', 'phone_number', 'role', 'designation', 'default_shipping_address']
 
     def get_default_shipping_address(self, obj):
         address = obj.addresses.filter(
