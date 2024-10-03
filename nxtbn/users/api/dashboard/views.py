@@ -112,3 +112,9 @@ class PasswordChangeView(generics.UpdateAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class UserRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    permission_classes = (NxtbnAdminPermission,)
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    lookup_field = 'id'
