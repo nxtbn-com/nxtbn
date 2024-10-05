@@ -89,7 +89,7 @@ class UserMututionalSerializer(serializers.ModelSerializer):
         if password:
             user.set_password(password)
         else:
-            user.set_password(get_random_string())
+            user.set_password(get_random_string(8))
         
         user.save()
         return user

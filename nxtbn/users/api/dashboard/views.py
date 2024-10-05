@@ -121,6 +121,13 @@ class PasswordChangeView(generics.UpdateAPIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserMututionalSerializer
+    pagination_class = NxtbnPagination
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        drf_filters.SearchFilter,
+        drf_filters.OrderingFilter
+    ]
+    search_fields = ['id', 'username', 'email']
 
     def perform_destroy(self, instance):
         instance.is_active = False
