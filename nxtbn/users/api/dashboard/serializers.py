@@ -73,6 +73,7 @@ class UserMututionalSerializer(serializers.ModelSerializer):
             'is_staff': {'read_only': True},
             'is_superuser': {'read_only': True},
             'role': {'read_only': True},
+            'username': {'read_only': True}
         }
 
     def create(self, validated_data):
