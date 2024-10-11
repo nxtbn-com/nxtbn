@@ -14,6 +14,7 @@ from nxtbn.filemanager.models import Document, Image
 from nxtbn.product import DimensionUnits, StockStatus, WeightUnits
 from nxtbn.tax.models import TaxClass
 from nxtbn.users.admin import User
+from django.db.models import Q
 
 class Supplier(NameDescriptionAbstract, AbstractSEOModel):
     pass
@@ -251,6 +252,35 @@ class ProductVariant(MonetaryMixin, AbstractUUIDModel, models.Model):
 
     class Meta:
         ordering = ('price',)  # Order by price ascending
+
+    def clean(self):
+        """
+        Custom validation to ensure unique attribute's value combinations for variants under the same product.
+        """
+        super().clean()  # Call the base class clean method
+        
+        # Check if the attributes are provided
+        if not self.attributes:
+            return
+        
+        # Create a dynamic query based on the attributes provided for the variant
+        query = Q(product=self.product)
+        
+        for key, value in self.attributes.items():
+            if value:
+                # Construct a dynamic query to match the key-value pairs in the attributes field
+                query &= Q(**{f'{key}': value})
+        
+        # Exclude the current instance from the check if it's an update
+        if self.pk:
+            query &= ~Q(pk=self.pk)
+        
+        # Check if any variant with the same attribute combination already exists for the same product
+        if ProductVariant.objects.filter(query).exists():
+            raise ValidationError(
+                f"A variant with the same attribute's key, value combination already exists for this product: {self.attributes}"
+            )
+
     
     def save(self, *args, **kwargs):
         self.validate_amount()
