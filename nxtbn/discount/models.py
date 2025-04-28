@@ -137,12 +137,13 @@ class PromoCode(AbstractBaseModel):
         if not self.min_purchase_amount or not self.min_purchase_period:
             return True
         cutoff_date = timezone.now() - self.min_purchase_period
-        total = Order.objects.filter(
+        result = Order.objects.filter(
             user=user,
             created_at__gte=cutoff_date,
             status__in=[OrderStatus.SHIPPED, OrderStatus.DELIVERED]
-        ).aggregate(total=models.Sum('total')) or 0
-        return total >= self.min_purchase_amount
+        ).aggregate(total=models.Sum('total_price'))
+        total = result['total'] if result['total'] is not None else 0
+        return total>=self.min_purchase_amount
     
     def has_applicable_products(self, user):
         from nxtbn.order.models import OrderLineItem
